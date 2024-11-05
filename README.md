@@ -1,8 +1,3 @@
-Here’s a README file for the Insurance Claims Processing System project:
-checking
-
----
-
 # Insurance Claims Processing System
 
 ## Team Members:
@@ -14,101 +9,70 @@ checking
 ## Project Overview:
 This project focuses on developing an Insurance Claims Processing System aimed at improving the efficiency and accuracy of claims management in the insurance industry. The system automates claim submission, processing, and tracking, reducing manual intervention and associated errors.
 
-## Problem Statement:
-Insurance companies encounter several challenges:
-- Inefficiency in managing policies and claims.
-- High error rates in manual processing, causing delays.
-- Difficulty in fraud detection due to decentralized data systems.
-- High operational costs from manual data handling.
+## Project_3 Deliverables
 
-## Objectives:
-1. **Improve Efficiency**: Streamline the claims process from submission to settlement.
-2. **Reduce Processing Time**: Expedite claim evaluation and decision-making.
-3. **Enhance Accuracy and Transparency**: Maintain accurate, transparent records for all stakeholders.
-4. **Cost Optimization**: Minimize operational costs through automation.
+### 1. Data Definition Language (DDL) Scripts
+The DDL scripts are used to define and manage the database schema, including the creation of tables, constraints, indexes, and relationships.
 
-## Solution Approach:
-### Claim Submission:
-- Automatic recording of claims reduces paperwork and manual data entry.
+- **Tables Created:**
+  - INSURANCE_APPLICATION
+  - POLICYHOLDER
+  - AGENT
+  - PROVIDER
+  - ADDRESS
+  - INSURANCE_TYPE
+  - POLICY
+  - CLAIM
+  - PAYMENT
 
-### Real-Time Data Flow:
-- Claims are processed in real-time and routed to the appropriate department based on predefined rules.
+- **Constraints:**
+  - Primary Keys (PK)
+  - Foreign Keys (FK)
+  - Unique Constraints
+  - Check Constraints
 
-### Standardized Evaluation:
-- Automated claim validation using pre-set rules ensures consistency.
+### 2. Data Manipulation Language (DML) Scripts
+The DML scripts are used for managing data within the database by inserting, updating, and deleting records.
 
-### Claims Tracking:
-- Real-time status tracking for both insurance companies and policyholders enhances transparency and reduces inquiries.
+- **Operations Performed:**
+  - Insert data into tables
+  - Update existing records
+  - Delete unwanted records
 
-### PL/SQL Implementation:
-- **Stored Procedures**: Manage stages like claim submission, validation, approval, and settlement.
-- **Triggers**: Automate status updates, department notifications, and transaction logging.
-- **Transaction Management**: Ensures instant processing of claim transactions.
-- **Data Integrity**: Maintains consistency and prevents redundancy using normalized data structures.
+### 3. Views
+Views are created to provide specific data insights without exposing full table structures or data.
 
-### Data Modeling:
-- **Normalization**: Organizes data to eliminate duplication and optimize storage.
-- **Dependencies**: Enforces relational constraints and validations to ensure accurate data processing.
+- **Created Views:**
+  - Policyholder and their active policies
+  - Claims processed by each agent
+  - Payment summaries for each claim
 
-## Conclusion:
-This system enhances operational efficiency, reduces processing time, ensures data accuracy, and optimizes costs, ultimately leading to higher customer satisfaction and better business insights for insurance companies.
+### 4. User Creation Scripts
+User creation scripts manage database user accounts, providing secure and controlled access to the database.
 
----
+- **Users Created:**
+  - policyholder_user
+  - agent_user
+  - provider_user
+  - admin_user
 
-This README provides an overview, objectives, solution approach, and technical details of the project, making it easy for others to understand and contribute to the development of the Insurance Claims Processing System.Here’s a README file for the Insurance Claims Processing System project:
+### 5. Grants
+Grants control user permissions, ensuring each user has the appropriate level of access based on their role.
 
----
+- **Permissions Granted:**
+  - SELECT, INSERT, UPDATE for agents
+  - SELECT for policyholders and providers
+  - ALL privileges for the admin
 
-# Insurance Claims Processing System
+## How to Run the Scripts
 
-## Team Members:
-1. Kashyab Murali (002751324)
-2. Mansi Gondil (002304645)
-3. Payal Jadhav (002790996)
-4. Sushma Mangalampati (002259895)
+1. Open your SQL client and connect to the target database.
+2. Execute the DDL scripts to set up the database schema.
+3. Insert data using the DML scripts.
+4. Create the views by executing the provided scripts.
+5. Run the user creation and grant scripts to set up and configure database users and permissions.
 
-## Project Overview:
-This project focuses on developing an Insurance Claims Processing System aimed at improving the efficiency and accuracy of claims management in the insurance industry. The system automates claim submission, processing, and tracking, reducing manual intervention and associated errors.
+## Notes
 
-## Problem Statement:
-Insurance companies encounter several challenges:
-- Inefficiency in managing policies and claims.
-- High error rates in manual processing, causing delays.
-- Difficulty in fraud detection due to decentralized data systems.
-- High operational costs from manual data handling.
-
-## Objectives:
-1. **Improve Efficiency**: Streamline the claims process from submission to settlement.
-2. **Reduce Processing Time**: Expedite claim evaluation and decision-making.
-3. **Enhance Accuracy and Transparency**: Maintain accurate, transparent records for all stakeholders.
-4. **Cost Optimization**: Minimize operational costs through automation.
-
-## Solution Approach:
-### Claim Submission:
-- Automatic recording of claims reduces paperwork and manual data entry.
-
-### Real-Time Data Flow:
-- Claims are processed in real-time and routed to the appropriate department based on predefined rules.
-
-### Standardized Evaluation:
-- Automated claim validation using pre-set rules ensures consistency.
-
-### Claims Tracking:
-- Real-time status tracking for both insurance companies and policyholders enhances transparency and reduces inquiries.
-
-### PL/SQL Implementation:
-- **Stored Procedures**: Manage stages like claim submission, validation, approval, and settlement.
-- **Triggers**: Automate status updates, department notifications, and transaction logging.
-- **Transaction Management**: Ensures instant processing of claim transactions.
-- **Data Integrity**: Maintains consistency and prevents redundancy using normalized data structures.
-
-### Data Modeling:
-- **Normalization**: Organizes data to eliminate duplication and optimize storage.
-- **Dependencies**: Enforces relational constraints and validations to ensure accurate data processing.
-
-## Conclusion:
-This system enhances operational efficiency, reduces processing time, ensures data accuracy, and optimizes costs, ultimately leading to higher customer satisfaction and better business insights for insurance companies.
-
----
-
-This README provides an overview, objectives, solution approach, and technical details of the project, making it easy for others to understand and contribute to the development of the Insurance Claims Processing System.
+- Ensure that all foreign key constraints are properly set before inserting data to maintain referential integrity.
+- Review the permissions carefully to avoid granting excessive privileges.
