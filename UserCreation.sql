@@ -1,30 +1,30 @@
-set serveroutput on;
+SET SERVEROUTPUT ON;
 
-declare
+DECLARE
 user_exists integer;
 
-begin
-    -- creating user ICPS_ADMIN
+BEGIN
+    -- creating user ICPS_CORE
     begin
         user_exists := 0;
         
         select count(*) 
         into user_exists
         from all_users
-        where upper(username) = 'ICPS_ADMIN';
+        where upper(username) = 'ICPS_CORE';
     
         if(user_exists = 1) then
-            execute immediate 'drop user ICPS_ADMIN cascade';
-            dbms_output.put_line('User ICPS_ADMIN dropped'); 
+            execute immediate 'drop user ICPS_CORE cascade';
+            dbms_output.put_line('User ICPS_CORE dropped'); 
         end if;
         
-        execute immediate 'create user ICPS_ADMIN identified by IcpsAdminProject2024#';
-        dbms_output.put_line('User ICPS_ADMIN created');
-        execute immediate 'grant ALTER SESSION, CONNECT, RESOURCE, UNLIMITED TABLESPACE to ICPS_ADMIN';
-        dbms_output.put_line('ALTER SESSION, CONNECT, RESOURCE, UNLIMITED TABLESPACE granted to ICPS_ADMIN');
+        execute immediate 'create user ICPS_CORE identified by IcpsCoreProject2024#';
+        dbms_output.put_line('User ICPS_CORE created');
+        execute immediate 'grant ALTER SESSION, CONNECT, RESOURCE, UNLIMITED TABLESPACE to ICPS_CORE';
+        dbms_output.put_line('ALTER SESSION, CONNECT, RESOURCE, UNLIMITED TABLESPACE granted to ICPS_CORE');
     exception 
     when others then
-        dbms_output.put_line('Exception occured while creating ICPS_ADMIN');
+        dbms_output.put_line('Exception occured while creating ICPS_CORE: '||sqlerrm);
     end;
     
     -- creating user PROVIDER
@@ -47,7 +47,7 @@ begin
         dbms_output.put_line('CREATE SESSION, ALTER SESSION granted to PROVIDER');
     exception 
     when others then
-        dbms_output.put_line('Exception occured while creating PROVIDER');
+        dbms_output.put_line('Exception occured while creating PROVIDER: '||sqlerrm);
     end;
     
     -- creating user POLICY_HOLDER
@@ -70,7 +70,7 @@ begin
         dbms_output.put_line('CREATE SESSION, ALTER SESSION granted to POLICY_HOLDER');
     exception 
     when others then
-        dbms_output.put_line('Exception occured while creating POLICY_HOLDER');
+        dbms_output.put_line('Exception occured while creating POLICY_HOLDER: '||sqlerrm);
     end;
     
     -- creating user MANAGER
@@ -93,7 +93,7 @@ begin
         dbms_output.put_line('CREATE SESSION, ALTER SESSION granted to MANAGER');
     exception 
     when others then
-        dbms_output.put_line('Exception occured while creating MANAGER');
+        dbms_output.put_line('Exception occured while creating MANAGER: '||sqlerrm);
     end;
     
     -- creating user ADJUSTER
@@ -116,7 +116,7 @@ begin
         dbms_output.put_line('CREATE SESSION, ALTER SESSION granted to ADJUSTER');
     exception 
     when others then
-        dbms_output.put_line('Exception occured while creating ADJUSTER');
+        dbms_output.put_line('Exception occured while creating ADJUSTER: '||sqlerrm);
     end;
     
     -- creating user SALESMAN
@@ -139,10 +139,10 @@ begin
         dbms_output.put_line('CREATE SESSION, ALTER SESSION granted to SALESMAN');
     exception 
     when others then
-        dbms_output.put_line('Exception occured while creating SALESMAN');
+        dbms_output.put_line('Exception occured while creating SALESMAN: '||sqlerrm);
     end;
       
-exception 
-    when others then
-        dbms_output.put_line('Exception occured while creating users');
-end;
+EXCEPTION 
+    WHEN OTHERS THEN
+        dbms_output.put_line('Exception occured while creating users: '||sqlerrm);
+END;
