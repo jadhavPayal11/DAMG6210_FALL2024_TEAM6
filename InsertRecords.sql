@@ -1,32 +1,62 @@
-set serveroutput on;
+SET SERVEROUTPUT ON;
 
-declare
-table_exists integer;
+DECLARE
+    row_count integer;
+    e_check_addr_type_violation EXCEPTION;
+    PRAGMA EXCEPTION_INIT(e_check_addr_type_violation, -02290);
+    e_not_null_violation EXCEPTION;
+    PRAGMA EXCEPTION_INIT(e_not_null_violation, -01400);
 
 BEGIN
 
     -- Insert data into the ADDRESS table
     Begin
-       If (Select Count(*) From Address) = 0 Then
-          Insert Into Address (Address_Id, Address_Line_1, Address_Line_2, City, State, Zipcode, Country)
-          Values (101, '123 Main St', 'Apt 4B', 'New York', 'New York', 10001, 'USA');
+        row_count := 0;
+        
+        select count(*) 
+        into row_count
+        from ADDRESS;
+        
+        if (row_count > 0) then
+            delete from ADDRESS;
+            commit;
+            dbms_output.put_line('All records deleted from ADDRESS table');
+        end if;
+        
+        Insert Into Address (address_id, address_line_1, address_line_2, address_type, city, state, zipcode, country)
+        Values (101, '123 Main St', 'Apt 4B', 'POLICYHOLDER', 'New York', 'New York', 10001, 'USA');
+        
+        Insert Into Address (address_id, address_line_1, address_line_2, address_type, city, state, zipcode, country)
+        Values (102, '122 Main St', 'Apt 4B', 'POLICYHOLDER', 'New York', 'New York', 10001, 'USA');
+        
+        Insert Into Address (address_id, address_line_1, address_line_2, address_type, city, state, zipcode, country)
+        Values (103, '456 Elm St', 'Suite 5', 'PROVIDER', 'Los Angeles', 'California', 90001, 'USA');
+        
+        Insert Into Address (address_id, address_line_1, address_line_2, address_type, city, state, zipcode, country)
+        Values (104, '789 Maple Ave', Null, 'POLICYHOLDER', 'Chicago', 'Illinois', 60601, 'USA');
+        
+        Insert Into Address (address_id, address_line_1, address_line_2, address_type, city, state, zipcode, country)
+        Values (105, '101 Oak Rd', 'Building 3', 'PROVIDER', 'Houston', 'Texas', 77001, 'USA');
+        
+        Insert Into Address (address_id, address_line_1, address_line_2, address_type, city, state, zipcode, country)
+        Values (106, '202 Pine St', Null, Null, 'Phoenix', 'Arizona', 85001, 'USA');
+        
+        commit;
+        dbms_output.put_line('Records inserted into ADDRESS table successfully!');
           
-          Insert Into Address (Address_Id, Address_Line_1, Address_Line_2, City, State, Zipcode, Country)
-          Values (102, '456 Elm St', 'Suite 5', 'Los Angeles', 'California', 90001, 'USA');
-          
-          Insert Into Address (Address_Id, Address_Line_1, Address_Line_2, City, State, Zipcode, Country)
-          Values (103, '789 Maple Ave', Null, 'Chicago', 'Illinois', 60601, 'USA');
-          
-          Insert Into Address (Address_Id, Address_Line_1, Address_Line_2, City, State, Zipcode, Country)
-          Values (104, '101 Oak Rd', 'Building 3', 'Houston', 'Texas', 77001, 'USA');
-          
-          Insert Into Address (Address_Id, Address_Line_1, Address_Line_2, City, State, Zipcode, Country)
-          Values (105, '202 Pine St', Null, 'Phoenix', 'Arizona', 85001, 'USA');
-       end if;
     exception 
+        when DUP_VAL_ON_INDEX then
+            dbms_output.put_line('Address already exists, check for duplicate address records');
+            rollback;
+        when e_check_addr_type_violation then
+            dbms_output.put_line('Invalid Address type. Address type should be PROVIDER or POLICYHOLDER');
+            rollback;
+        when e_not_null_violation then
+            dbms_output.put_line('Address line 1, city, state, zipcode, country cannot be null');
+            rollback;
         when others then
             dbms_output.put_line('Exception occured while inserting data into ADDRESS table: '||sqlerrm);
-        
+            rollback;
     end;
     
     -- Insert sample data into the INSURANCE_TYPE table
@@ -53,4 +83,11 @@ BEGIN
             dbms_output.put_line('Exception occured while inserting data into INSURANCE_TYPE table: '||sqlerrm);
         
     end;
+    
+    -- Insert sample data into the POLICYHOLDER table
+    
+    
+EXCEPTION 
+    WHEN OTHERS THEN
+        dbms_output.put_line('Exception occured while inserting records into tables');    
 END;
