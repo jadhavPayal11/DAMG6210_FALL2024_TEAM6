@@ -4,7 +4,7 @@ DECLARE
 table_exists integer;
 
 BEGIN
-    --Address table
+    --ADDRESS table
     begin
         table_exists := 0;
         select count(*)
@@ -33,7 +33,7 @@ BEGIN
             END
          ) VIRTUAL,
          CONSTRAINT address_id_pk PRIMARY KEY (address_id),
-         CONSTRAINT check_addr_type CHECK(address_type IN (''PROVIDER'', ''POLICYHOLDER'')),
+         CONSTRAINT check_addr_type CHECK(address_type IN (''RESIDENTIAL'', ''COMMERCIAL'')),
          CONSTRAINT check_unique_addr UNIQUE(combined_address)
          )';
          
@@ -46,7 +46,7 @@ BEGIN
             dbms_output.put_line('Exception occured while creating ADDRESS table: ' || sqlerrm);
     end;
     
-    --INSURANCE_TYPE Table
+  /*  --INSURANCE_TYPE Table
     begin
         table_exists := 0;
         select count(*)
@@ -70,7 +70,7 @@ BEGIN
         when others then
             dbms_output.put_line('Exception occured while creating INSURANCE_TYPE table: '||sqlerrm);
         
-    end;
+    end; */
     
     -- Table POLICYHOLDER
     begin
@@ -86,16 +86,16 @@ BEGIN
          end if;
          execute immediate 'CREATE TABLE POLICYHOLDER (
             policyholder_id INTEGER,
-            first_name VARCHAR2(30),
-            last_name VARCHAR2(30),
+            first_name VARCHAR2(30) CONSTRAINT fname_nn NOT NULL,
+            last_name VARCHAR2(30) CONSTRAINT lname_nn NOT NULL,
             dob DATE,
-            email VARCHAR2(30),
-            contact NUMBER(10),
+            email VARCHAR2(30) CONSTRAINT email_nn NOT NULL,
+            contact NUMBER(10) CONSTRAINT contact_nn NOT NULL,
             address_id INTEGER,
             CONSTRAINT policyholder_id_pk PRIMARY KEY (policyholder_id),
-            CONSTRAINT ph_addr_id_fk FOREIGN KEY (address_id) REFERENCES ADDRESS(address_id)
+            CONSTRAINT ph_addr_id_fk FOREIGN KEY (address_id) REFERENCES ADDRESS(address_id) ON DELETE SET NULL
         )';
-         dbms_output.put_line('Table POLICYHOLDER created');
+        dbms_output.put_line('Table POLICYHOLDER created');
        
     exception 
         when others then
@@ -103,7 +103,7 @@ BEGIN
         
     end;
     
-    -- Table PROVIDER
+  /*  -- Table PROVIDER
     begin
         table_exists := 0;
         select count(*)
@@ -296,7 +296,7 @@ BEGIN
         when others then
             dbms_output.put_line('Exception occured while creating PAYMENT table: '||sqlerrm);
         
-    end;
+    end;    */
 EXCEPTION 
     WHEN OTHERS THEN
         dbms_output.put_line('Exception occured while creating tables');    
