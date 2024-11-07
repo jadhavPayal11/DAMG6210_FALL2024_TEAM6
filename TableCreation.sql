@@ -46,9 +46,9 @@ BEGIN
             dbms_output.put_line('Exception occured while creating ADDRESS table: ' || sqlerrm);
     end;
     
-  /*  --INSURANCE_TYPE Table
+  --INSURANCE_TYPE Table
     begin
-        table_exists := 0;
+        table_exists :=0;
         select count(*)
         into table_exists
         from user_tables
@@ -60,17 +60,19 @@ BEGIN
          end if;
          execute immediate 'CREATE TABLE INSURANCE_TYPE (
             insurance_type_id INTEGER,
-            insurance_type_name VARCHAR2(30),
+            insurance_type_name VARCHAR2(30) CONSTRAINT insurance_type_name_nn NOT NULL,
             description VARCHAR2(255),
-            CONSTRAINT insurance_type_id_pk PRIMARY KEY (insurance_type_id)
+            CONSTRAINT insurance_type_id_pk PRIMARY KEY (insurance_type_id),
+            CONSTRAINT check_unique_instype_name UNIQUE(insurance_type_name)
         )';
-        dbms_output.put_line('Table INSURANCE_TYPE created');
+        dbms_output.put_line('Table INSURANCE_TYPE Created');
        
     exception 
         when others then
             dbms_output.put_line('Exception occured while creating INSURANCE_TYPE table: '||sqlerrm);
         
-    end; */
+    end; 
+    
     
     -- Table POLICYHOLDER
     begin
@@ -103,9 +105,9 @@ BEGIN
         
     end;
     
-  /*  -- Table PROVIDER
+  -- Table PROVIDER
     begin
-        table_exists := 0;
+        table_exists :=0;
         select count(*)
         into table_exists
         from user_tables
@@ -117,23 +119,25 @@ BEGIN
          end if;
          execute immediate 'CREATE TABLE PROVIDER (
             provider_id INTEGER PRIMARY KEY,
-            provider_name VARCHAR2(30),
-            email VARCHAR2(30),
-            contact NUMBER(10),
+            provider_name VARCHAR2(30) CONSTRAINT provider_name_nn NOT NULL,
+            email VARCHAR2(30) CONSTRAINT pr_email_nn NOT NULL,
+            contact NUMBER(10) CONSTRAINT pr_contact_nn NOT NULL,
             address_id INTEGER,
-            FOREIGN KEY (address_id) REFERENCES ADDRESS(address_id)
+            CONSTRAINT address_id_fk FOREIGN KEY (address_id) REFERENCES ADDRESS(address_id),
+            CONSTRAINT check_unique_provider_name UNIQUE(provider_name),
+            CONSTRAINT check_unique_email UNIQUE(email)
         )';
-        dbms_output.put_line('Table PROVIDER created');
+        dbms_output.put_line('Table PROVIDER Created');
        
     exception 
         when others then
             dbms_output.put_line('Exception occured while creating PROVIDER table: '||sqlerrm);
         
     end;
-    
+
     -- Table AGENT
     begin
-        table_exists := 0;
+        table_exists :=0;
         select count(*)
         into table_exists
         from user_tables
@@ -145,27 +149,29 @@ BEGIN
          end if;
          execute immediate 'CREATE TABLE AGENT (
             agent_id INTEGER PRIMARY KEY,
-            provider_id INTEGER,
-            first_name VARCHAR2(30),
-            last_name VARCHAR2(30),
-            designation VARCHAR2(20),
+            provider_id INTEGER CONSTRAINT agent_provider_id_nn NOT NULL,
+            first_name VARCHAR2(30)CONSTRAINT agent_fname_nn NOT NULL,
+            last_name VARCHAR2(30) CONSTRAINT agent_lname_nn NOT NULL,
+            designation VARCHAR2(20) CONSTRAINT agent_designation_check CHECK (designation IN (''Manager'', ''Adjuster'', ''Salesman'')),
             manager_id INTEGER,
-            email VARCHAR2(30),
+            email VARCHAR2(30) CONSTRAINT ag_email_nn NOT NULL,
             contact NUMBER(10),
-            FOREIGN KEY (provider_id) REFERENCES PROVIDER(provider_id),
-            FOREIGN KEY (manager_id) REFERENCES AGENT(agent_id)
+            CONSTRAINT provider_id_fk FOREIGN KEY (provider_id) REFERENCES PROVIDER(provider_id),
+            CONSTRAINT manager_id_fk FOREIGN KEY (manager_id) REFERENCES AGENT(agent_id),
+            CONSTRAINT check_unique_ag_email UNIQUE(email),
+            CONSTRAINT check_unique_ag_contact UNIQUE(contact)
         )';
-        dbms_output.put_line('Table AGENT created');
+        dbms_output.put_line('Table AGENT Created');
        
     exception 
         when others then
             dbms_output.put_line('Exception occured while creating AGENT table: '||sqlerrm);
         
     end;
-    
+   
     -- Table INSURANCE_APPLICATION
     begin
-        table_exists := 0;
+        table_exists :=0;
         select count(*)
         into table_exists
         from user_tables
@@ -178,27 +184,29 @@ BEGIN
          execute immediate 'CREATE TABLE INSURANCE_APPLICATION (
             application_id INTEGER PRIMARY KEY,
             policyholder_id INTEGER,
-            insurance_type_id INTEGER,
-            application_date DATE,
-            status VARCHAR2(20),
-            review_date DATE,
+            insurance_type_id INTEGER CONSTRAINT insapp_type_id_nn NOT NULL ,
+            application_date DATE DEFAULT SYSDATE CONSTRAINT insapp_date_nn NOT NULL,
+            status VARCHAR2(20) CONSTRAINT insapp_status_check CHECK (status IN (''Pending'', ''Approved'', ''Rejected'')),
+            review_date DATE CONSTRAINT insapp_review_date_nn NOT NULL,
             agent_id INTEGER,
             comments VARCHAR2(255),
-            FOREIGN KEY (policyholder_id) REFERENCES POLICYHOLDER(policyholder_id),
-            FOREIGN KEY (insurance_type_id) REFERENCES INSURANCE_TYPE(insurance_type_id),
-            FOREIGN KEY (agent_id) REFERENCES AGENT(agent_id)
+            CONSTRAINT policyholder_id_fk FOREIGN KEY (policyholder_id) REFERENCES POLICYHOLDER(policyholder_id),
+            CONSTRAINT insurance_type_fk FOREIGN KEY (insurance_type_id) REFERENCES INSURANCE_TYPE(insurance_type_id),
+            CONSTRAINT agent_id_fk FOREIGN KEY (agent_id) REFERENCES AGENT(agent_id),
+            CONSTRAINT chk_review_after_application CHECK (review_date > application_date)
+
         )';
-        dbms_output.put_line('Table INSURANCE_APPLICATION created');
+        dbms_output.put_line('Table INSURANCE_APPLICATION Created');
        
     exception 
         when others then
             dbms_output.put_line('Exception occured while creating INSURANCE_APPLICATION table: '||sqlerrm);
         
     end;
-    
+      
     -- Table POLICY
     begin
-        table_exists := 0;
+        table_exists :=0;
         select count(*)
         into table_exists
         from user_tables
@@ -210,22 +218,23 @@ BEGIN
          end if;
          execute immediate 'CREATE TABLE POLICY (
             policy_id INTEGER PRIMARY KEY,
-            application_id INTEGER,
-            policyholder_id INTEGER,
-            provider_id INTEGER,
-            insurance_type_id INTEGER,
-            policy_type VARCHAR2(30),
+            application_id INTEGER CONSTRAINT policy_app_id_nn NOT NULL,
+            policyholder_id INTEGER CONSTRAINT policy_holder_id_nn NOT NULL,
+            provider_id INTEGER CONSTRAINT policy_provider_id_nn NOT NULL,
+            insurance_type_id INTEGER CONSTRAINT insurance_type_id_nn NOT NULL,
             start_date DATE,
             end_date DATE,
-            premium_amount NUMBER(10,2),
-            coverage_amount NUMBER(10,2),
-            policy_status VARCHAR2(20),
-            FOREIGN KEY (application_id) REFERENCES INSURANCE_APPLICATION(application_id),
-            FOREIGN KEY (policyholder_id) REFERENCES POLICYHOLDER(policyholder_id),
-            FOREIGN KEY (provider_id) REFERENCES PROVIDER(provider_id),
-            FOREIGN KEY (insurance_type_id) REFERENCES INSURANCE_TYPE(insurance_type_id)
+            premium_amount NUMBER(10,2) CONSTRAINT policy_premium_check CHECK (premium_amount BETWEEN 20 AND 20000),
+            coverage_amount NUMBER(10,2) CONSTRAINT policy_coverage_check CHECK (coverage_amount <= 500000),
+            policy_status VARCHAR2(20) CONSTRAINT policy_status_check CHECK (policy_status IN (''Active'', ''Expired'', ''Canceled'', ''Pending'')),
+            CONSTRAINT policy_application_id_fk FOREIGN KEY (application_id) REFERENCES INSURANCE_APPLICATION(application_id),
+            CONSTRAINT policy_policyholder_id_fk FOREIGN KEY (policyholder_id) REFERENCES POLICYHOLDER(policyholder_id),
+            CONSTRAINT policy_provider_id_fk FOREIGN KEY (provider_id) REFERENCES PROVIDER(provider_id),
+            CONSTRAINT policy_insurance_type_id_fk FOREIGN KEY (insurance_type_id) REFERENCES INSURANCE_TYPE(insurance_type_id),
+            CONSTRAINT chk_start_before_end CHECK (start_date < end_date),
+            CONSTRAINT chk_coverage_more_than_premium CHECK (coverage_amount > premium_amount)
         )';
-        dbms_output.put_line('Table POLICY created');
+        dbms_output.put_line('Table POLICY Created');
        
     exception 
         when others then
@@ -233,10 +242,10 @@ BEGIN
         
     end;
     
-    
+ 
     -- Table CLAIM
     begin
-        table_exists := 0;
+        table_exists :=0;
         select count(*)
         into table_exists
         from user_tables
@@ -248,19 +257,19 @@ BEGIN
          end if;
          execute immediate 'CREATE TABLE CLAIM (
             claim_id INTEGER PRIMARY KEY,
-            policy_id INTEGER,
+            policy_id INTEGER CONSTRAINT claim_policy_id_nn NOT NULL,
             agent_id INTEGER,
             claim_date DATE,
             claim_type VARCHAR2(20),
             claim_description VARCHAR2(255),
-            amount NUMBER(10,2),
+            amount NUMBER(10,2), 
             claim_status VARCHAR2(20),
             claim_priority VARCHAR2(10),
             estimated_settlement_date DATE,
-            FOREIGN KEY (policy_id) REFERENCES POLICY(policy_id),
-            FOREIGN KEY (agent_id) REFERENCES AGENT(agent_id)
+            CONSTRAINT claim_policy_id_fk FOREIGN KEY (policy_id) REFERENCES POLICY(policy_id),
+            CONSTRAINT claim_agent_id_fk FOREIGN KEY (agent_id) REFERENCES AGENT(agent_id)
         )';
-        dbms_output.put_line('Table CLAIM created');
+        dbms_output.put_line('Table CLAIM Created');
        
     exception 
         when others then
@@ -268,10 +277,9 @@ BEGIN
         
     end;
     
-    
     -- Table PAYMENT
     begin
-        table_exists := 0;
+        table_exists :=0;
         select count(*)
         into table_exists
         from user_tables
@@ -283,20 +291,20 @@ BEGIN
          end if;
          execute immediate 'CREATE TABLE PAYMENT (
             payment_id INTEGER PRIMARY KEY,
-            claim_id INTEGER,
+            claim_id INTEGER CONSTRAINT claim_id_nn NOT NULL,
             payment_date DATE,
             payment_amount INTEGER,
-            payment_method VARCHAR2(20),
-            payment_status VARCHAR2(20),
-            FOREIGN KEY (claim_id) REFERENCES CLAIM(claim_id)
+            payment_method VARCHAR2(20) CONSTRAINT payment_method_check CHECK (payment_method IN (''Check'', ''Direct Deposit'', ''Payment to Third Party'')),
+            payment_status VARCHAR2(20) CONSTRAINT payment_status_check CHECK (payment_status IN (''Partial'', ''Completed'')),
+            CONSTRAINT payment_claim_id_fk FOREIGN KEY (claim_id) REFERENCES CLAIM(claim_id)
         )';
-        dbms_output.put_line('Table PAYMENT created');
+        dbms_output.put_line('Table PAYMENT Created');
        
     exception 
         when others then
             dbms_output.put_line('Exception occured while creating PAYMENT table: '||sqlerrm);
         
-    end;    */
+    end;   
 EXCEPTION 
     WHEN OTHERS THEN
         dbms_output.put_line('Exception occured while creating tables');    
