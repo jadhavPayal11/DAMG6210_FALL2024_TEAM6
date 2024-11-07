@@ -262,7 +262,7 @@ BEGIN
             claim_date DATE,
             claim_type VARCHAR2(20),
             claim_description VARCHAR2(255),
-            amount NUMBER(10,2), 
+            claim_amount NUMBER(10,2), 
             claim_status VARCHAR2(20),
             claim_priority VARCHAR2(10),
             estimated_settlement_date DATE,
@@ -295,8 +295,8 @@ BEGIN
             payment_date DATE,
             payment_amount INTEGER,
             payment_method VARCHAR2(20) CONSTRAINT payment_method_check CHECK (payment_method IN (''Check'', ''Direct Deposit'', ''Payment to 3rd Party'')),
-            payment_status VARCHAR2(20) CONSTRAINT payment_status_check CHECK (payment_status IN (''Partial'', ''Completed'')),
-            CONSTRAINT payment_claim_id_fk FOREIGN KEY (claim_id) REFERENCES CLAIM(claim_id) ON DELETE SET NULL
+            payment_status VARCHAR2(20) CONSTRAINT payment_status_check CHECK (payment_status IN (''Partial'', ''Completed'', ''Failed'')),
+            CONSTRAINT payment_claim_id_fk FOREIGN KEY (claim_id) REFERENCES CLAIM(claim_id) ON DELETE CASCADE
         )';
         dbms_output.put_line('Table PAYMENT Created');
        
