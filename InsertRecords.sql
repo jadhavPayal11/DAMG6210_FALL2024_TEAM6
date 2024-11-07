@@ -137,16 +137,16 @@ BEGIN
             VALUES (6, 'Michael', 'Williams', TO_DATE( '1988-11-12','YYYY-MM-DD'), 'michael.williams@example.com', '5551112222', 106);
       
             INSERT INTO policyholder (policyholder_id, first_name, last_name, dob, email, contact, address_id)
-            VALUES (7, 'Laura', 'Taylor', TO_DATE( '1992-04-30','YYYY-MM-DD'), 'laura.taylor@example.com', '5552223333', 107);
+            VALUES (7, 'Laura', 'Taylor', TO_DATE( '1992-04-30','YYYY-MM-DD'), 'laura.taylor@example.com', '5552223333', 101);
       
             INSERT INTO policyholder (policyholder_id, first_name, last_name, dob, email, contact, address_id)
-            VALUES (8, 'Daniel', 'Anderson', TO_DATE( '1986-09-21','YYYY-MM-DD'), 'daniel.anderson@example.com', '5553334444', 108);
+            VALUES (8, 'Daniel', 'Anderson', TO_DATE( '1986-09-21','YYYY-MM-DD'), 'daniel.anderson@example.com', '5553334444', 102);
       
             INSERT INTO policyholder (policyholder_id, first_name, last_name, dob, email, contact, address_id)
-            VALUES (9, 'Jessica', 'Thomas', TO_DATE( '1993-11-05','YYYY-MM-DD'), 'jessica.thomas@example.com', '5554445555', 109);
+            VALUES (9, 'Jessica', 'Thomas', TO_DATE( '1993-11-05','YYYY-MM-DD'), 'jessica.thomas@example.com', '5554445555', 104);
       
             INSERT INTO policyholder (policyholder_id, first_name, last_name, dob, email, contact, address_id)
-            VALUES (10, 'James', 'Martin', TO_DATE( '1979-06-18','YYYY-MM-DD'), 'james.martin@example.com', '5555556666', 110);
+            VALUES (10, 'James', 'Martin', TO_DATE( '1979-06-18','YYYY-MM-DD'), 'james.martin@example.com', '5555556666', 104);
         
         commit;
         dbms_output.put_line('Records inserted into POLICYHOLDER table successfully!');
@@ -156,7 +156,7 @@ BEGIN
             dbms_output.put_line('Policy holder already exists, check for duplicate policy holder records');
             rollback;
         when e_not_null_violation then
-            dbms_output.put_line('Mandatory columns cannot be null');
+            dbms_output.put_line('Mandatory columns cannot be null in POLICYHOLDER table');
             rollback;
         when e_fk_violation then
             dbms_output.put_line('Foreign key violation, enter a valid address id');
@@ -182,20 +182,20 @@ BEGIN
         End If;
         
         -- Insert sample data into the PROVIDER table
-        Insert Into Provider (Provider_Id, Provider_Name, Address_Id, Contact_Number, Email, Provider_Type)
-        Values (1, 'HealthFirst Insurance', 201, '5551234567', 'contact@healthfirst.com', 'Health');
+        Insert Into Provider (Provider_Id, Provider_Name, Address_Id, Contact, Email)
+        Values (1, 'HealthFirst Insurance', 103, '5551234567', 'contact@healthfirst.com');
         
-        Insert Into Provider (Provider_Id, Provider_Name, Address_Id, Contact_Number, Email, Provider_Type)
-        Values (2, 'AutoSafe Assurance', 202, '5552345678', 'support@autosafe.com', 'Auto');
+        Insert Into Provider (Provider_Id, Provider_Name, Address_Id, Contact, Email)
+        Values (2, 'AutoSafe Assurance', 105, '5552345678', 'support@autosafe.com');
         
-        Insert Into Provider (Provider_Id, Provider_Name, Address_Id, Contact_Number, Email, Provider_Type)
-        Values (3, 'LifeSecure Partners', 203, '5553456789', 'info@lifesecure.com', 'Life');
+        Insert Into Provider (Provider_Id, Provider_Name, Address_Id, Contact, Email)
+        Values (3, 'LifeSecure Partners', 103, '5553456789', 'info@lifesecure.com');
         
-        Insert Into Provider (Provider_Id, Provider_Name, Address_Id, Contact_Number, Email, Provider_Type)
-        Values (4, 'HomeShield Insurance', 204, '5554567890', 'contact@homeshield.com', 'Home');
+        Insert Into Provider (Provider_Id, Provider_Name, Address_Id, Contact, Email)
+        Values (4, 'HomeShield Insurance', 105, '5554567890', 'contact@homeshield.com');
         
-        Insert Into Provider (Provider_Id, Provider_Name, Address_Id, Contact_Number, Email, Provider_Type)
-        Values (5, 'GeneralGuard', 205, '5555678901', 'service@generalguard.com', 'General');
+        Insert Into Provider (Provider_Id, Provider_Name, Address_Id, Contact, Email)
+        Values (5, 'GeneralGuard', 103, '5555678901', 'service@generalguard.com');
         
         Commit;
         Dbms_Output.Put_Line('Records inserted into PROVIDER table successfully!');
@@ -205,7 +205,7 @@ BEGIN
             Dbms_Output.Put_Line('Provider already exists, check for duplicate provider records');
             Rollback;
         When E_Not_Null_Violation Then
-            Dbms_Output.Put_Line('Mandatory columns cannot be null');
+            Dbms_Output.Put_Line('Mandatory columns cannot be null PROVIDER table');
             Rollback;
         When E_Fk_Violation Then
             Dbms_Output.Put_Line('Foreign key violation, enter a valid address ID');
@@ -215,54 +215,53 @@ BEGIN
     end;
 
     -- Insert data into the AGENT table
-    
-    begin
+    Begin
         -- Check if records exist in the AGENT table
-        row_count := 0;
+        Row_Count := 0;
         
-        select count(*) 
-        into row_count
-        from agent;
+        Select Count(*) 
+        Into Row_Count
+        From Agent;
         
         -- If records exist, delete them
-        if (row_count > 0) then
-            delete from agent;
-            commit;
-            dbms_output.put_line('All records deleted from AGENT table');
-        end if;
+        If (Row_Count > 0) Then
+            Delete From Agent;
+            Commit;
+            Dbms_Output.Put_Line('All records deleted from AGENT table');
+        End If;
         
-        -- Insert data into the AGENT table
-        insert into agent (agent_id, provider_id, first_name, last_name, designation, manager_id, email, contact)
-        values (1, 1, 'Sarah', 'Miller', 'Senior Agent', null, 'sarah.miller@example.com', '5551002000');
+        -- Insert sample data into the AGENT table
+        Insert Into Agent (Agent_Id, Provider_Id, First_Name, Last_Name, Designation, Manager_Id, Email, Contact)
+        Values (1, 1, 'Sarah', 'Miller', 'Manager', Null, 'sarah.miller@example.com', '5551002000');
         
-        insert into agent (agent_id, provider_id, first_name, last_name, designation, manager_id, email, contact)
-        values (2, 1, 'David', 'Johnson', 'Agent', 1, 'david.johnson@example.com', '5551003000');
+        Insert Into Agent (Agent_Id, Provider_Id, First_Name, Last_Name, Designation, Manager_Id, Email, Contact)
+        Values (2, 1, 'David', 'Johnson', 'Adjuster', 1, 'david.johnson@example.com', '5551003000');
         
-        insert into agent (agent_id, provider_id, first_name, last_name, designation, manager_id, email, contact)
-        values (3, 2, 'Emily', 'Davis', 'Agent', 1, 'emily.davis@example.com', '5551004000');
+        Insert Into Agent (Agent_Id, Provider_Id, First_Name, Last_Name, Designation, Manager_Id, Email, Contact)
+        Values (3, 2, 'Emily', 'Davis', 'Salesman', 1, 'emily.davis@example.com', '5551004000');
         
-        insert into agent (agent_id, provider_id, first_name, last_name, designation, manager_id, email, contact)
-        values (4, 3, 'James', 'Brown', 'Lead Agent', null, 'james.brown@example.com', '5551005000');
+        Insert Into Agent (Agent_Id, Provider_Id, First_Name, Last_Name, Designation, Manager_Id, Email, Contact)
+        Values (4, 3, 'James', 'Brown', 'Manager', Null, 'james.brown@example.com', '5551005000');
         
-        insert into agent (agent_id, provider_id, first_name, last_name, designation, manager_id, email, contact)
-        values (5, 2, 'Olivia', 'Wilson', 'Agent', 3, 'olivia.wilson@example.com', '5551006000');
+        Insert Into Agent (Agent_Id, Provider_Id, First_Name, Last_Name, Designation, Manager_Id, Email, Contact)
+        Values (5, 2, 'Olivia', 'Wilson', 'Adjuster', 4, 'olivia.wilson@example.com', '5551006000');
         
-        commit;
-        dbms_output.put_line('Records inserted into AGENT table successfully!');
+        Commit;
+        Dbms_Output.Put_Line('Records inserted into AGENT table successfully!');
         
-    exception 
-        when dup_val_on_index then
-            dbms_output.put_line('Agent already exists, check for duplicate agent records');
-            rollback;
-        when e_not_null_violation then
-            dbms_output.put_line('Mandatory columns cannot be null');
-            rollback;
-        when e_fk_violation then
-            dbms_output.put_line('Foreign key violation, enter a valid provider or manager ID');
-            rollback;
-        when others then
-            dbms_output.put_line('Exception occurred while inserting data into AGENT table: ' || sqlerrm);
-    end;
+    Exception 
+        When Dup_Val_On_Index Then
+            Dbms_Output.Put_Line('Agent already exists, check for duplicate agent records');
+            Rollback;
+        When E_Not_Null_Violation Then
+            Dbms_Output.Put_Line('Mandatory columns cannot be null in AGENT table');
+            Rollback;
+        When E_Fk_Violation Then
+            Dbms_Output.Put_Line('Foreign key violation, enter valid provider or manager ID');
+            Rollback;
+        When Others Then
+            Dbms_Output.Put_Line('Exception occurred while inserting data into AGENT table: ' || Sqlerrm);
+    End;
     
     -- Insert data into the INSURANCE_APPLICATION table
     begin
@@ -291,7 +290,7 @@ BEGIN
         values (3, 3, 3, to_date('2023-03-05', 'YYYY-MM-DD'), 'Rejected', to_date('2023-03-10', 'YYYY-MM-DD'), 3, 'Rejected due to incomplete documentation');
         
         insert into INSURANCE_APPLICATION (APPLICATION_ID, POLICYHOLDER_ID, INSURANCE_TYPE_ID, APPLICATION_DATE, STATUS, REVIEW_DATE, AGENT_ID, COMMENTS)
-        values (4, 4, 4, to_date('2023-04-12', 'YYYY-MM-DD'), 'Pending', null, 4, 'Application under review');
+        values (4, 4, 4, to_date('2023-04-12', 'YYYY-MM-DD'), 'Pending', to_date('2023-04-30', 'YYYY-MM-DD'), 4, 'Application under review');
         
         insert into INSURANCE_APPLICATION (APPLICATION_ID, POLICYHOLDER_ID, INSURANCE_TYPE_ID, APPLICATION_DATE, STATUS, REVIEW_DATE, AGENT_ID, COMMENTS)
         values (5, 5, 5, to_date('2023-05-20', 'YYYY-MM-DD'), 'Approved', to_date('2023-05-25', 'YYYY-MM-DD'), 5, 'Approved and policy issued');
@@ -304,7 +303,7 @@ BEGIN
             DBMS_OUTPUT.PUT_LINE('Insurance application already exists, check for duplicate application records');
             rollback;
         when E_NOT_NULL_VIOLATION then
-            DBMS_OUTPUT.PUT_LINE('Mandatory columns cannot be null');
+            DBMS_OUTPUT.PUT_LINE('Mandatory columns cannot be null in INSURANCE_APPLICATION table');
             rollback;
         when E_FK_VIOLATION then
             DBMS_OUTPUT.PUT_LINE('Foreign key violation, enter valid policyholder, insurance type, or agent ID');
@@ -330,20 +329,20 @@ BEGIN
         end if;
         
         -- Insert sample data into the POLICY table
-        insert into policy (POLICY_ID, APPLICATION_ID, POLICYHOLDER_ID, PROVIDER_ID, INSURANCE_TYPE_ID, POLICY_TYPE, START_DATE, END_DATE, PREMIUM_AMOUNT, COVERAGE_AMOUNT, POLICY_STATUS)
-        values (101, 1, 1, 1, 1, 'Health', to_date('2023-01-15', 'YYYY-MM-DD'), to_date('2024-01-15', 'YYYY-MM-DD'), 1200.00, 10000.00, 'Active');
+        insert into policy (POLICY_ID, APPLICATION_ID, POLICYHOLDER_ID, PROVIDER_ID, INSURANCE_TYPE_ID, START_DATE, END_DATE, PREMIUM_AMOUNT, COVERAGE_AMOUNT, POLICY_STATUS)
+        values (101, 1, 1, 1, 1, to_date('2023-01-15', 'YYYY-MM-DD'), to_date('2024-01-15', 'YYYY-MM-DD'), 1200.00, 10000.00, 'Active');
         
-        insert into policy (POLICY_ID, APPLICATION_ID, POLICYHOLDER_ID, PROVIDER_ID, INSURANCE_TYPE_ID, POLICY_TYPE, START_DATE, END_DATE, PREMIUM_AMOUNT, COVERAGE_AMOUNT, POLICY_STATUS)
-        values (102, 2, 2, 2, 2, 'Auto', to_date('2023-02-10', 'YYYY-MM-DD'), to_date('2024-02-10', 'YYYY-MM-DD'), 900.00, 15000.00, 'Active');
+        insert into policy (POLICY_ID, APPLICATION_ID, POLICYHOLDER_ID, PROVIDER_ID, INSURANCE_TYPE_ID, START_DATE, END_DATE, PREMIUM_AMOUNT, COVERAGE_AMOUNT, POLICY_STATUS)
+        values (102, 2, 2, 2, 2, to_date('2023-02-10', 'YYYY-MM-DD'), to_date('2024-02-10', 'YYYY-MM-DD'), 900.00, 15000.00, 'Active');
         
-        insert into policy (POLICY_ID, APPLICATION_ID, POLICYHOLDER_ID, PROVIDER_ID, INSURANCE_TYPE_ID, POLICY_TYPE, START_DATE, END_DATE, PREMIUM_AMOUNT, COVERAGE_AMOUNT, POLICY_STATUS)
-        values (103, 3, 3, 3, 3, 'Life', to_date('2023-03-05', 'YYYY-MM-DD'), to_date('2033-03-05', 'YYYY-MM-DD'), 1500.00, 20000.00, 'Active');
+        insert into policy (POLICY_ID, APPLICATION_ID, POLICYHOLDER_ID, PROVIDER_ID, INSURANCE_TYPE_ID, START_DATE, END_DATE, PREMIUM_AMOUNT, COVERAGE_AMOUNT, POLICY_STATUS)
+        values (103, 3, 3, 3, 3, to_date('2023-03-05', 'YYYY-MM-DD'), to_date('2033-03-05', 'YYYY-MM-DD'), 1500.00, 20000.00, 'Active');
         
-        insert into policy (POLICY_ID, APPLICATION_ID, POLICYHOLDER_ID, PROVIDER_ID, INSURANCE_TYPE_ID, POLICY_TYPE, START_DATE, END_DATE, PREMIUM_AMOUNT, COVERAGE_AMOUNT, POLICY_STATUS)
-        values (104, 4, 4, 4, 4, 'Home', to_date('2023-04-12', 'YYYY-MM-DD'), to_date('2028-04-12', 'YYYY-MM-DD'), 2000.00, 30000.00, 'Active');
+        insert into policy (POLICY_ID, APPLICATION_ID, POLICYHOLDER_ID, PROVIDER_ID, INSURANCE_TYPE_ID, START_DATE, END_DATE, PREMIUM_AMOUNT, COVERAGE_AMOUNT, POLICY_STATUS)
+        values (104, 4, 4, 4, 4, to_date('2023-04-12', 'YYYY-MM-DD'), to_date('2028-04-12', 'YYYY-MM-DD'), 2000.00, 30000.00, 'Active');
         
-        insert into policy (POLICY_ID, APPLICATION_ID, POLICYHOLDER_ID, PROVIDER_ID, INSURANCE_TYPE_ID, POLICY_TYPE, START_DATE, END_DATE, PREMIUM_AMOUNT, COVERAGE_AMOUNT, POLICY_STATUS)
-        values (105, 5, 5, 5, 5, 'Travel', to_date('2023-05-20', 'YYYY-MM-DD'), to_date('2024-05-20', 'YYYY-MM-DD'), 500.00, 5000.00, 'Inactive');
+        insert into policy (POLICY_ID, APPLICATION_ID, POLICYHOLDER_ID, PROVIDER_ID, INSURANCE_TYPE_ID, START_DATE, END_DATE, PREMIUM_AMOUNT, COVERAGE_AMOUNT, POLICY_STATUS)
+        values (105, 5, 5, 5, 5, to_date('2023-05-20', 'YYYY-MM-DD'), null, 500.00, 5000.00, 'Pending');
         
         commit;
         DBMS_OUTPUT.PUT_LINE('Records inserted into POLICY table successfully!');
@@ -353,7 +352,7 @@ BEGIN
             DBMS_OUTPUT.PUT_LINE('Policy already exists, check for duplicate policy records');
             rollback;
         when E_NOT_NULL_VIOLATION then
-            DBMS_OUTPUT.PUT_LINE('Mandatory columns cannot be null');
+            DBMS_OUTPUT.PUT_LINE('Mandatory columns cannot be null in POLICY table ');
             rollback;
         when E_FK_VIOLATION then
             DBMS_OUTPUT.PUT_LINE('Foreign key violation, enter valid application, policyholder, provider, or insurance type ID');
@@ -379,19 +378,19 @@ BEGIN
         End If;
         
         -- Insert sample data into the CLAIM table
-        Insert Into Claim (Claim_Id, Policy_Id, Agent_Id, Claim_Date, Claim_Type, Claim_Description, Claim_Amount, Claim_Status, Claim_Priority, Estimated_Settlement_Date)
+        Insert Into Claim (Claim_Id, Policy_Id, Agent_Id, Claim_Date, Claim_Type, Claim_Description, Amount, Claim_Status, Claim_Priority, Estimated_Settlement_Date)
         Values (1, 101, 1, To_Date('2023-06-01', 'YYYY-MM-DD'), 'Accident', 'Minor accident involving rear collision', 2500.00, 'Pending', 'High', To_Date('2023-06-10', 'YYYY-MM-DD'));
         
-        Insert Into Claim (Claim_Id, Policy_Id, Agent_Id, Claim_Date, Claim_Type, Claim_Description, Claim_Amount, Claim_Status, Claim_Priority, Estimated_Settlement_Date)
+        Insert Into Claim (Claim_Id, Policy_Id, Agent_Id, Claim_Date, Claim_Type, Claim_Description, Amount, Claim_Status, Claim_Priority, Estimated_Settlement_Date)
         Values (2, 102, 2, To_Date('2023-06-05', 'YYYY-MM-DD'), 'Theft', 'Stolen vehicle', 15000.00, 'Approved', 'High', To_Date('2023-06-15', 'YYYY-MM-DD'));
         
-        Insert Into Claim (Claim_Id, Policy_Id, Agent_Id, Claim_Date, Claim_Type, Claim_Description, Claim_Amount, Claim_Status, Claim_Priority, Estimated_Settlement_Date)
+        Insert Into Claim (Claim_Id, Policy_Id, Agent_Id, Claim_Date, Claim_Type, Claim_Description, Amount, Claim_Status, Claim_Priority, Estimated_Settlement_Date)
         Values (3, 103, 3, To_Date('2023-06-10', 'YYYY-MM-DD'), 'Fire', 'Fire damage in engine compartment', 5000.00, 'Rejected', 'Medium', Null);
         
-        Insert Into Claim (Claim_Id, Policy_Id, Agent_Id, Claim_Date, Claim_Type, Claim_Description, Claim_Amount, Claim_Status, Claim_Priority, Estimated_Settlement_Date)
+        Insert Into Claim (Claim_Id, Policy_Id, Agent_Id, Claim_Date, Claim_Type, Claim_Description, Amount, Claim_Status, Claim_Priority, Estimated_Settlement_Date)
         Values (4, 104, 4, To_Date('2023-06-12', 'YYYY-MM-DD'), 'Medical', 'Hospitalization after accident', 7000.00, 'Pending', 'High', To_Date('2023-06-20', 'YYYY-MM-DD'));
         
-        Insert Into Claim (Claim_Id, Policy_Id, Agent_Id, Claim_Date, Claim_Type, Claim_Description, Claim_Amount, Claim_Status, Claim_Priority, Estimated_Settlement_Date)
+        Insert Into Claim (Claim_Id, Policy_Id, Agent_Id, Claim_Date, Claim_Type, Claim_Description, Amount, Claim_Status, Claim_Priority, Estimated_Settlement_Date)
         Values (5, 105, 5, To_Date('2023-06-15', 'YYYY-MM-DD'), 'Accident', 'Severe accident with multiple injuries', 20000.00, 'Approved', 'Critical', To_Date('2023-06-25', 'YYYY-MM-DD'));
         
         Commit;
@@ -402,7 +401,7 @@ BEGIN
             Dbms_Output.Put_Line('Claim already exists, check for duplicate claim records');
             Rollback;
         When E_Not_Null_Violation Then
-            Dbms_Output.Put_Line('Mandatory columns cannot be null');
+            Dbms_Output.Put_Line('Mandatory columns cannot be null in CLAIM table ');
             Rollback;
         When E_Fk_Violation Then
             Dbms_Output.Put_Line('Foreign key violation, enter valid policy or agent ID');
@@ -428,19 +427,19 @@ BEGIN
         
         -- Insert sample data into the PAYMENT table
         insert into PAYMENT (PAYMENT_ID, CLAIM_ID, PAYMENT_DATE, PAYMENT_AMOUNT, PAYMENT_METHOD, PAYMENT_STATUS)
-        values (1, 201, to_date('2023-06-15', 'YYYY-MM-DD'), 2500.00, 'Bank Transfer', 'Completed');
+        values (1, 1, to_date('2023-06-15', 'YYYY-MM-DD'), 2500.00, 'Check', 'Completed');
         
         insert into PAYMENT (PAYMENT_ID, CLAIM_ID, PAYMENT_DATE, PAYMENT_AMOUNT, PAYMENT_METHOD, PAYMENT_STATUS)
-        values (2, 202, to_date('2023-06-20', 'YYYY-MM-DD'), 15000.00, 'Credit Card', 'Completed');
+        values (2, 2, to_date('2023-06-20', 'YYYY-MM-DD'), 15000.00, 'Direct Deposit', 'Completed');
         
         insert into PAYMENT (PAYMENT_ID, CLAIM_ID, PAYMENT_DATE, PAYMENT_AMOUNT, PAYMENT_METHOD, PAYMENT_STATUS)
-        values (3, 203, to_date('2023-06-25', 'YYYY-MM-DD'), 5000.00, 'Debit Card', 'Pending');
+        values (3, 3, to_date('2023-06-25', 'YYYY-MM-DD'), 5000.00, 'Payment to 3rd Party', 'Pending');
         
         insert into PAYMENT (PAYMENT_ID, CLAIM_ID, PAYMENT_DATE, PAYMENT_AMOUNT, PAYMENT_METHOD, PAYMENT_STATUS)
-        values (4, 204, to_date('2023-06-30', 'YYYY-MM-DD'), 7000.00, 'Bank Transfer', 'Completed');
+        values (4, 4, to_date('2023-06-30', 'YYYY-MM-DD'), 7000.00, 'Check', 'Completed');
         
         insert into PAYMENT (PAYMENT_ID, CLAIM_ID, PAYMENT_DATE, PAYMENT_AMOUNT, PAYMENT_METHOD, PAYMENT_STATUS)
-        values (5, 205, to_date('2023-07-05', 'YYYY-MM-DD'), 20000.00, 'Cash', 'Failed');
+        values (5, 5, to_date('2023-07-05', 'YYYY-MM-DD'), 20000.00, 'Direct Deposit', 'Failed');
         
         commit;
         DBMS_OUTPUT.PUT_LINE('Records inserted into PAYMENT table successfully!');
@@ -450,10 +449,10 @@ BEGIN
             DBMS_OUTPUT.PUT_LINE('Payment already exists, check for duplicate payment records');
             rollback;
         when E_NOT_NULL_VIOLATION then
-            DBMS_OUTPUT.PUT_LINE('Mandatory columns cannot be null');
+            DBMS_OUTPUT.PUT_LINE('Mandatory columns cannot be null in PAYMENT table');
             rollback;
         when E_FK_VIOLATION then
-            DBMS_OUTPUT.PUT_LINE('Foreign key violation, enter a valid claim ID');
+            DBMS_OUTPUT.PUT_LINE('Foreign key violation, enter a valid claim ID in PAYMENT table');
             rollback;
         when others then
             DBMS_OUTPUT.PUT_LINE('Exception occurred while inserting data into PAYMENT table: ' || SQLERRM);
