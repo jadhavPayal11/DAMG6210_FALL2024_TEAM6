@@ -156,7 +156,7 @@ BEGIN
             manager_id INTEGER,
             email VARCHAR2(30) CONSTRAINT ag_email_nn NOT NULL,
             contact NUMBER(10),
-            CONSTRAINT provider_id_fk FOREIGN KEY (provider_id) REFERENCES PROVIDER(provider_id) ON DELETE SET NULL,
+            CONSTRAINT provider_id_fk FOREIGN KEY (provider_id) REFERENCES PROVIDER(provider_id) ON DELETE CASCADE,
             CONSTRAINT manager_id_fk FOREIGN KEY (manager_id) REFERENCES AGENT(agent_id) ON DELETE SET NULL,
             CONSTRAINT check_unique_ag_email UNIQUE(email),
             CONSTRAINT check_unique_ag_contact UNIQUE(contact)
@@ -191,7 +191,7 @@ BEGIN
             agent_id INTEGER,
             comments VARCHAR2(255),
             CONSTRAINT policyholder_id_fk FOREIGN KEY (policyholder_id) REFERENCES POLICYHOLDER(policyholder_id) ON DELETE SET NULL,
-            CONSTRAINT insurance_type_fk FOREIGN KEY (insurance_type_id) REFERENCES INSURANCE_TYPE(insurance_type_id) ON DELETE SET NULL,
+            CONSTRAINT insurance_type_fk FOREIGN KEY (insurance_type_id) REFERENCES INSURANCE_TYPE(insurance_type_id) ON DELETE CASCADE,
             CONSTRAINT agent_id_fk FOREIGN KEY (agent_id) REFERENCES AGENT(agent_id) ON DELETE SET NULL,
             CONSTRAINT chk_review_after_application CHECK (review_date > application_date)
 
@@ -227,10 +227,10 @@ BEGIN
             premium_amount NUMBER(10,2) CONSTRAINT policy_premium_check CHECK (premium_amount BETWEEN 20 AND 20000),
             coverage_amount NUMBER(10,2) CONSTRAINT policy_coverage_check CHECK (coverage_amount <= 500000),
             policy_status VARCHAR2(20) CONSTRAINT policy_status_check CHECK (policy_status IN (''Active'', ''Expired'', ''Canceled'', ''Pending'')),
-            CONSTRAINT policy_application_id_fk FOREIGN KEY (application_id) REFERENCES INSURANCE_APPLICATION(application_id) ON DELETE SET NULL,
-            CONSTRAINT policy_policyholder_id_fk FOREIGN KEY (policyholder_id) REFERENCES POLICYHOLDER(policyholder_id) ON DELETE SET NULL,
-            CONSTRAINT policy_provider_id_fk FOREIGN KEY (provider_id) REFERENCES PROVIDER(provider_id) ON DELETE SET NULL,
-            CONSTRAINT policy_insurance_type_id_fk FOREIGN KEY (insurance_type_id) REFERENCES INSURANCE_TYPE(insurance_type_id) ON DELETE SET NULL,
+            CONSTRAINT policy_application_id_fk FOREIGN KEY (application_id) REFERENCES INSURANCE_APPLICATION(application_id) ON DELETE CASCADE,
+            CONSTRAINT policy_policyholder_id_fk FOREIGN KEY (policyholder_id) REFERENCES POLICYHOLDER(policyholder_id) ON DELETE CASCADE,
+            CONSTRAINT policy_provider_id_fk FOREIGN KEY (provider_id) REFERENCES PROVIDER(provider_id) ON DELETE CASCADE,
+            CONSTRAINT policy_insurance_type_id_fk FOREIGN KEY (insurance_type_id) REFERENCES INSURANCE_TYPE(insurance_type_id) ON DELETE CASCADE,
             CONSTRAINT chk_start_before_end CHECK (start_date < end_date),
             CONSTRAINT chk_coverage_more_than_premium CHECK (coverage_amount > premium_amount)
         )';
@@ -266,7 +266,7 @@ BEGIN
             claim_status VARCHAR2(20),
             claim_priority VARCHAR2(10),
             estimated_settlement_date DATE,
-            CONSTRAINT claim_policy_id_fk FOREIGN KEY (policy_id) REFERENCES POLICY(policy_id) ON DELETE SET NULL,
+            CONSTRAINT claim_policy_id_fk FOREIGN KEY (policy_id) REFERENCES POLICY(policy_id) ON DELETE CASCADE,
             CONSTRAINT claim_agent_id_fk FOREIGN KEY (agent_id) REFERENCES AGENT(agent_id) ON DELETE SET NULL
         )';
         dbms_output.put_line('Table CLAIM Created');
@@ -294,7 +294,7 @@ BEGIN
             claim_id INTEGER CONSTRAINT claim_id_nn NOT NULL,
             payment_date DATE,
             payment_amount INTEGER,
-            payment_method VARCHAR2(20) CONSTRAINT payment_method_check CHECK (payment_method IN (''Check'', ''Direct Deposit'', ''Payment to Third Party'')),
+            payment_method VARCHAR2(20) CONSTRAINT payment_method_check CHECK (payment_method IN (''Check'', ''Direct Deposit'', ''Payment to 3rd Party'')),
             payment_status VARCHAR2(20) CONSTRAINT payment_status_check CHECK (payment_status IN (''Partial'', ''Completed'')),
             CONSTRAINT payment_claim_id_fk FOREIGN KEY (claim_id) REFERENCES CLAIM(claim_id) ON DELETE SET NULL
         )';
