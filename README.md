@@ -58,7 +58,7 @@ User creation scripts manage database user accounts, providing secure and contro
 - **Users Created:**
   - ICPS_ADMIN
   - ICPS_CORE
-  - PROVIDEE
+  - PROVIDER
   - POLICY_HOLDER
   - MANAGER
   - ADJUSTER
@@ -74,10 +74,12 @@ Grants control user permissions, ensuring each user has the appropriate level of
 
 ## How to Run the Scripts
 
-1. Open your SQL client and connect to the target database 
-     1. AdminCreation.sql
-     2. UserCreation.sql
-     3. TableCreation.sql
-     4. InsertRecords.sql
-     5. Views.sql
-     6. TableGrants.sql
+SQL Script Execution Sequence:
+1. Run the AdminCreation.sql script by connecting to your database admin.
+2. Run the UserCreation.sql by script connecting to ICPS_ADMIN that was created in Step1.
+3. Run the TableCreation.sql script by connecting to ICPS_CORE that was created in Step2.
+4. Run the InsertRecords.sql script by connecting to ICPS_CORE.
+5. Run the TablesGrants.sql by script connecting to ICPS_CORE.
+6. Run the Views.sql script by connecting to ICPS_CORE to create views.
+7. Run the ViewsGrants.sql  script by connecting to ICPS_CORE.
+
