@@ -175,6 +175,165 @@ BEGIN
         WHEN OTHERS THEN
             dbms_output.put_line('Exception occurred while creating MONTHLY_CLAIMS_STATISTICS: ' || sqlerrm);
     END;
+    
+    
+    BEGIN
+        -- Check if the view already exists
+        SELECT COUNT(*)
+        INTO view_exists
+        FROM USER_VIEWS
+        WHERE VIEW_NAME = 'POLICYHOLDER_CLAIM_HISTORY';
+
+        -- Drop the view if it exists
+        IF view_exists = 1 THEN
+            EXECUTE IMMEDIATE 'DROP VIEW POLICYHOLDER_CLAIM_HISTORY';
+            DBMS_OUTPUT.PUT_LINE('View POLICYHOLDER_CLAIM_HISTORY dropped');
+        END IF;
+
+        -- Create the view
+        EXECUTE IMMEDIATE 'CREATE VIEW POLICYHOLDER_CLAIM_HISTORY AS
+        SELECT
+            ph.policyholder_id,
+            CONCAT(ph.first_name, '' '', ph.last_name) AS policy_holder_name,
+            pol.policy_id,
+            cl.claim_id,
+            cl.claim_type,
+            cl.amount,
+            cl.claim_date AS submission_date,
+            cl.estimated_settlement_date,
+            cl.claim_status
+        FROM
+            CLAIM cl
+        JOIN
+            POLICY pol ON cl.policy_id = pol.policy_id
+        JOIN
+            POLICYHOLDER ph ON pol.policyholder_id = ph.policyholder_id';
+        
+        DBMS_OUTPUT.PUT_LINE('View POLICYHOLDER_CLAIM_HISTORY created');
+    
+    EXCEPTION
+        WHEN OTHERS THEN
+            DBMS_OUTPUT.PUT_LINE('Exception occurred while creating POLICYHOLDER_CLAIM_HISTORY: ' || SQLERRM);
+    END;
+    
+    
+    BEGIN
+        -- Check if the view already exists
+        SELECT COUNT(*)
+        INTO view_exists
+        FROM USER_VIEWS
+        WHERE VIEW_NAME = 'POLICY_EXPIRATION_ALERT';
+
+        -- Drop the view if it exists
+        IF view_exists = 1 THEN
+            EXECUTE IMMEDIATE 'DROP VIEW POLICY_EXPIRATION_ALERT';
+            DBMS_OUTPUT.PUT_LINE('View POLICY_EXPIRATION_ALERT dropped');
+        END IF;
+
+        -- Create the view
+        EXECUTE IMMEDIATE 'CREATE VIEW POLICY_EXPIRATION_ALERT AS
+        SELECT
+            pol.policy_id,
+            CONCAT(ph.first_name, '' '', ph.last_name) AS policy_holder_name,
+            pol.policy_type,
+            pol.end_date AS expiration_date,
+            TRUNC(pol.end_date - SYSDATE) AS days_until_expiration
+        FROM
+            POLICY pol
+        JOIN
+            POLICYHOLDER ph ON pol.policyholder_id = ph.policyholder_id
+        WHERE
+            pol.end_date BETWEEN SYSDATE AND SYSDATE + 30';
+        
+        DBMS_OUTPUT.PUT_LINE('View POLICY_EXPIRATION_ALERT created');
+    
+    EXCEPTION
+        WHEN OTHERS THEN
+            DBMS_OUTPUT.PUT_LINE('Exception occurred while creating POLICY_EXPIRATION_ALERT: ' || SQLERRM);
+    END;
+    
+    
+    BEGIN
+        -- Check if the view already exists
+        SELECT COUNT(*)
+        INTO view_exists
+        FROM USER_VIEWS
+        WHERE VIEW_NAME = 'ADJUSTER_PERFORMANCE_METRICS';
+
+        -- Drop the view if it exists
+        IF view_exists = 1 THEN
+            EXECUTE IMMEDIATE 'DROP VIEW ADJUSTER_PERFORMANCE_METRICS';
+            DBMS_OUTPUT.PUT_LINE('View ADJUSTER_PERFORMANCE_METRICS dropped');
+        END IF;
+
+        -- Create the view
+        EXECUTE IMMEDIATE 'CREATE VIEW ADJUSTER_PERFORMANCE_METRICS AS
+        SELECT
+            ag.agent_id AS adjuster_id,
+            CONCAT(ag.first_name, '' '', ag.last_name) AS adjuster_name,
+            COUNT(cl.claim_id) AS total_claims_assigned,
+            COUNT(CASE WHEN cl.claim_status = ''Resolved'' THEN 1 END) AS claims_resolved,
+            AVG(cl.estimated_settlement_date - cl.claim_date) AS average_resolution_time,
+            ROUND(
+                (COUNT(CASE WHEN cl.claim_status = ''Resolved'' THEN 1 END) / NULLIF(COUNT(cl.claim_id), 0)) * 100,
+                2
+            ) AS accuracy_rate
+        FROM
+            AGENT ag
+        LEFT JOIN
+            CLAIM cl ON ag.agent_id = cl.agent_id
+        GROUP BY
+            ag.agent_id, CONCAT(ag.first_name, '' '', ag.last_name)';
+        
+        DBMS_OUTPUT.PUT_LINE('View ADJUSTER_PERFORMANCE_METRICS created');
+    
+    EXCEPTION
+        WHEN OTHERS THEN
+            DBMS_OUTPUT.PUT_LINE('Exception occurred while creating ADJUSTER_PERFORMANCE_METRICS: ' || SQLERRM);
+    END;
+    
+    
+    BEGIN
+        -- Check if the view already exists
+        SELECT COUNT(*)
+        INTO view_exists
+        FROM USER_VIEWS
+        WHERE VIEW_NAME = 'PAYMENT_PROCESSING_QUEUE';
+
+        -- Drop the view if it exists
+        IF view_exists = 1 THEN
+            EXECUTE IMMEDIATE 'DROP VIEW PAYMENT_PROCESSING_QUEUE';
+            DBMS_OUTPUT.PUT_LINE('View PAYMENT_PROCESSING_QUEUE dropped');
+        END IF;
+
+        -- Create the view
+        EXECUTE IMMEDIATE 'CREATE VIEW PAYMENT_PROCESSING_QUEUE AS
+        SELECT
+            cl.claim_id,
+            cl.policy_id,
+            CONCAT(ph.first_name, '' '', ph.last_name) AS policy_holder_name,
+            cl.amount AS approved_amount,
+            cl.estimated_settlement_date AS approval_date,
+            pay.payment_status,
+            pay.payment_date AS scheduled_payment_date,
+            pay.payment_method
+        FROM
+            CLAIM cl
+        JOIN
+            POLICY pol ON cl.policy_id = pol.policy_id
+        JOIN
+            POLICYHOLDER ph ON pol.policyholder_id = ph.policyholder_id
+        LEFT JOIN
+            PAYMENT pay ON cl.claim_id = pay.claim_id
+        WHERE
+            cl.claim_status = ''Approved''';
+        
+        DBMS_OUTPUT.PUT_LINE('View PAYMENT_PROCESSING_QUEUE created');
+    
+    EXCEPTION
+        WHEN OTHERS THEN
+            DBMS_OUTPUT.PUT_LINE('Exception occurred while creating PAYMENT_PROCESSING_QUEUE: ' || SQLERRM);
+    END;
 
 EXCEPTION
     WHEN OTHERS THEN
