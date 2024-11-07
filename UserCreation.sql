@@ -43,8 +43,8 @@ BEGIN
         
         execute immediate 'create user PROVIDER identified by IcpsProProject2024#';
         dbms_output.put_line('User PROVIDER created');
-        execute immediate 'grant CREATE SESSION, ALTER SESSION to PROVIDER';
-        dbms_output.put_line('CREATE SESSION, ALTER SESSION granted to PROVIDER');
+        execute immediate 'grant CONNECT, ALTER SESSION to PROVIDER';
+        dbms_output.put_line('CONNECT, ALTER SESSION granted to PROVIDER');
     exception 
     when others then
         dbms_output.put_line('Exception occured while creating PROVIDER: '||sqlerrm);
@@ -66,8 +66,8 @@ BEGIN
         
         execute immediate 'create user POLICY_HOLDER identified by PolicyHolderProject2024#';
         dbms_output.put_line('User POLICY_HOLDER created');
-        execute immediate 'grant CREATE SESSION, ALTER SESSION to POLICY_HOLDER';
-        dbms_output.put_line('CREATE SESSION, ALTER SESSION granted to POLICY_HOLDER');
+        execute immediate 'grant CONNECT, ALTER SESSION to POLICY_HOLDER';
+        dbms_output.put_line('CONNECT, ALTER SESSION granted to POLICY_HOLDER');
     exception 
     when others then
         dbms_output.put_line('Exception occured while creating POLICY_HOLDER: '||sqlerrm);
@@ -89,8 +89,8 @@ BEGIN
         
         execute immediate 'create user MANAGER identified by IcpsManProject2024#';
         dbms_output.put_line('User MANAGER created');
-        execute immediate 'grant CREATE SESSION, ALTER SESSION to MANAGER';
-        dbms_output.put_line('CREATE SESSION, ALTER SESSION granted to MANAGER');
+        execute immediate 'grant CONNECT, ALTER SESSION to MANAGER';
+        dbms_output.put_line('CONNECT, ALTER SESSION granted to MANAGER');
     exception 
     when others then
         dbms_output.put_line('Exception occured while creating MANAGER: '||sqlerrm);
@@ -112,8 +112,8 @@ BEGIN
         
         execute immediate 'create user ADJUSTER identified by IcpsAdjProject2024#';
         dbms_output.put_line('User ADJUSTER created');
-        execute immediate 'grant CREATE SESSION, ALTER SESSION to ADJUSTER';
-        dbms_output.put_line('CREATE SESSION, ALTER SESSION granted to ADJUSTER');
+        execute immediate 'grant CONNECT, ALTER SESSION to ADJUSTER';
+        dbms_output.put_line('CONNECT, ALTER SESSION granted to ADJUSTER');
     exception 
     when others then
         dbms_output.put_line('Exception occured while creating ADJUSTER: '||sqlerrm);
@@ -135,8 +135,8 @@ BEGIN
         
         execute immediate 'create user SALESMAN identified by IcpsSalesProject2024#';
         dbms_output.put_line('User SALESMAN created');
-        execute immediate 'grant CREATE SESSION, ALTER SESSION to SALESMAN';
-        dbms_output.put_line('CREATE SESSION, ALTER SESSION granted to SALESMAN');
+        execute immediate 'grant CONNECT, ALTER SESSION to SALESMAN';
+        dbms_output.put_line('CONNECT, ALTER SESSION granted to SALESMAN');
     exception 
     when others then
         dbms_output.put_line('Exception occured while creating SALESMAN: '||sqlerrm);
