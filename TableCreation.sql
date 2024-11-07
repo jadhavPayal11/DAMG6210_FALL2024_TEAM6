@@ -156,7 +156,7 @@ BEGIN
             manager_id INTEGER,
             email VARCHAR2(30) CONSTRAINT ag_email_nn NOT NULL,
             contact NUMBER(10),
-            CONSTRAINT provider_id_fk FOREIGN KEY (provider_id) REFERENCES PROVIDER(provider_id) ON DELETE SET NULL,
+            CONSTRAINT provider_id_fk FOREIGN KEY (provider_id) REFERENCES PROVIDER(provider_id) ON DELETE CASCADE,
             CONSTRAINT manager_id_fk FOREIGN KEY (manager_id) REFERENCES AGENT(agent_id) ON DELETE SET NULL,
             CONSTRAINT check_unique_ag_email UNIQUE(email),
             CONSTRAINT check_unique_ag_contact UNIQUE(contact)
@@ -191,7 +191,7 @@ BEGIN
             agent_id INTEGER,
             comments VARCHAR2(255),
             CONSTRAINT policyholder_id_fk FOREIGN KEY (policyholder_id) REFERENCES POLICYHOLDER(policyholder_id) ON DELETE SET NULL,
-            CONSTRAINT insurance_type_fk FOREIGN KEY (insurance_type_id) REFERENCES INSURANCE_TYPE(insurance_type_id) ON DELETE SET NULL,
+            CONSTRAINT insurance_type_fk FOREIGN KEY (insurance_type_id) REFERENCES INSURANCE_TYPE(insurance_type_id) ON DELETE CASCADE,
             CONSTRAINT agent_id_fk FOREIGN KEY (agent_id) REFERENCES AGENT(agent_id) ON DELETE SET NULL,
             CONSTRAINT chk_review_after_application CHECK (review_date > application_date)
 
