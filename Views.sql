@@ -26,7 +26,7 @@ BEGIN
         pol.policy_id,
         CONCAT(ph.first_name, '' '', ph.last_name) AS policy_holder_name,
         prov.provider_name,
-        pol.policy_type,
+        inst.insurance_type_name,
         pol.premium_amount,
         pol.coverage_amount,
         pol.start_date AS policy_start_date,
@@ -37,6 +37,8 @@ BEGIN
         POLICYHOLDER ph ON pol.policyholder_id = ph.policyholder_id
     JOIN
         PROVIDER prov ON pol.provider_id = prov.provider_id
+    JOIN 
+        INSURANCE_TYPE inst ON pol.insurance_type_id = inst.insurance_type_id
     WHERE
         pol.policy_status = ''Active''';
         dbms_output.put_line('View ACTIVE_POLICIES_SUMMARY created');
@@ -119,7 +121,7 @@ BEGIN
             cl.policy_id,
             CONCAT(ph.first_name, '' '', ph.last_name) AS policy_holder_name,
             cl.claim_type,
-            cl.amount,
+            cl.claim_amount,
             cl.claim_date AS submission_date,
             cl.claim_status AS current_status,
             CONCAT(ag.first_name, '' '', ag.last_name) AS assigned_agent,
@@ -164,7 +166,7 @@ BEGIN
             COUNT(cl.claim_id) AS total_claims_submitted,
             COUNT(CASE WHEN cl.claim_status = ''Approved'' THEN 1 END) AS total_claims_approved,
             COUNT(CASE WHEN cl.claim_status = ''Rejected'' THEN 1 END) AS total_claims_rejected,
-            AVG(cl.amount) AS average_claim_amount,
+            AVG(cl.claim_amount) AS average_claim_amount,
             AVG(cl.estimated_settlement_date - cl.claim_date) AS average_processing_time
         FROM
             CLAIM cl
@@ -198,7 +200,7 @@ BEGIN
             pol.policy_id,
             cl.claim_id,
             cl.claim_type,
-            cl.amount,
+            cl.claim_amount,
             cl.claim_date AS submission_date,
             cl.estimated_settlement_date,
             cl.claim_status
@@ -235,13 +237,15 @@ BEGIN
         SELECT
             pol.policy_id,
             CONCAT(ph.first_name, '' '', ph.last_name) AS policy_holder_name,
-            pol.policy_type,
+            inst.insurance_type_name,
             pol.end_date AS expiration_date,
             TRUNC(pol.end_date - SYSDATE) AS days_until_expiration
         FROM
             POLICY pol
         JOIN
             POLICYHOLDER ph ON pol.policyholder_id = ph.policyholder_id
+        JOIN 
+            INSURANCE_TYPE inst ON pol.insurance_type_id = inst.insurance_type_id
         WHERE
             pol.end_date BETWEEN SYSDATE AND SYSDATE + 30';
         
@@ -312,7 +316,7 @@ BEGIN
             cl.claim_id,
             cl.policy_id,
             CONCAT(ph.first_name, '' '', ph.last_name) AS policy_holder_name,
-            cl.amount AS approved_amount,
+            cl.claim_amount AS approved_amount,
             cl.estimated_settlement_date AS approval_date,
             pay.payment_status,
             pay.payment_date AS scheduled_payment_date,
@@ -339,6 +343,3 @@ EXCEPTION
     WHEN OTHERS THEN
         dbms_output.put_line('Exception during the creation of overall VIEWS: ' || sqlerrm);
 END;
-/
-
--- End of script for creating ACTIVE_POLICIES_SUMMARY
