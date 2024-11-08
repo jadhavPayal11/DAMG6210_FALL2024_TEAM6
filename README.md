@@ -43,18 +43,26 @@ The DML scripts are used for managing data within the database by inserting, upd
 Views are created to provide specific data insights without exposing full table structures or data.
 
 - **Created Views:**
-  - Policyholder and their active policies
-  - Claims processed by each agent
-  - Payment summaries for each claim
+  - Insurance_Application_Overview
+  - Active_Policies_Summary
+  - Pending_Claims_Overview
+  - Monthly_Claims_Statistics
+  - Policyholder_Claim_History
+  - Policy_Expiration_Alert
+  - Adjuster_Performance_Metrics
+  - Payment_Processing_Queue
 
 ### 4. User Creation Scripts
 User creation scripts manage database user accounts, providing secure and controlled access to the database.
 
 - **Users Created:**
-  - policyholder_user
-  - agent_user
-  - provider_user
-  - admin_user
+  - ICPS_ADMIN
+  - ICPS_CORE
+  - PROVIDER
+  - POLICY_HOLDER
+  - MANAGER
+  - ADJUSTER
+  - SALESMAN
 
 ### 5. Grants
 Grants control user permissions, ensuring each user has the appropriate level of access based on their role.
@@ -66,13 +74,12 @@ Grants control user permissions, ensuring each user has the appropriate level of
 
 ## How to Run the Scripts
 
-1. Open your SQL client and connect to the target database.
-2. Execute the DDL scripts to set up the database schema.
-3. Insert data using the DML scripts.
-4. Create the views by executing the provided scripts.
-5. Run the user creation and grant scripts to set up and configure database users and permissions.
+SQL Script Execution Sequence:
+1. Run the AdminCreation.sql script by connecting to your database admin.
+2. Run the UserCreation.sql by script connecting to ICPS_ADMIN that was created in Step1.
+3. Run the TableCreation.sql script by connecting to ICPS_CORE that was created in Step2.
+4. Run the InsertRecords.sql script by connecting to ICPS_CORE.
+5. Run the TablesGrants.sql by script connecting to ICPS_CORE.
+6. Run the Views.sql script by connecting to ICPS_CORE to create views.
+7. Run the ViewsGrants.sql  script by connecting to ICPS_CORE.
 
-## Notes
-
-- Ensure that all foreign key constraints are properly set before inserting data to maintain referential integrity.
-- Review the permissions carefully to avoid granting excessive privileges.
