@@ -19,8 +19,8 @@ BEGIN
         
         execute immediate 'create user ICPS_ADMIN identified by IcpsAdminProject2024#';
         dbms_output.put_line('User ICPS_ADMIN created');
-        execute immediate 'grant ALTER SESSION, CONNECT, RESOURCE, UNLIMITED TABLESPACE to ICPS_ADMIN with ADMIN OPTION';
-        dbms_output.put_line('ALTER SESSION, CONNECT, RESOURCE, UNLIMITED TABLESPACE granted to ICPS_ADMIN with ADMIN OPTION');
+        execute immediate 'grant ALTER SESSION, CONNECT, RESOURCE, CREATE VIEW, UNLIMITED TABLESPACE to ICPS_ADMIN with ADMIN OPTION';
+        dbms_output.put_line('ALTER SESSION, CONNECT, RESOURCE, CREATE VIEW, UNLIMITED TABLESPACE granted to ICPS_ADMIN with ADMIN OPTION');
         execute immediate 'grant CREATE USER, ALTER USER, DROP USER to ICPS_ADMIN';
         dbms_output.put_line('CREATE USER, ALTER USER, DROP USER granted to ICPS_ADMIN');
         execute immediate 'grant CREATE ROLE, ALTER ANY ROLE, DROP ANY ROLE to ICPS_ADMIN';
