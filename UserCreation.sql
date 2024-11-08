@@ -20,8 +20,8 @@ BEGIN
         
         execute immediate 'create user ICPS_CORE identified by IcpsCoreProject2024#';
         dbms_output.put_line('User ICPS_CORE created');
-        execute immediate 'grant ALTER SESSION, CONNECT, RESOURCE, UNLIMITED TABLESPACE to ICPS_CORE';
-        dbms_output.put_line('ALTER SESSION, CONNECT, RESOURCE, UNLIMITED TABLESPACE granted to ICPS_CORE');
+        execute immediate 'grant ALTER SESSION, CONNECT, RESOURCE, CREATE VIEW, UNLIMITED TABLESPACE to ICPS_CORE';
+        dbms_output.put_line('ALTER SESSION, CONNECT, RESOURCE, CREATE VIEW, UNLIMITED TABLESPACE granted to ICPS_CORE');
     exception 
     when others then
         dbms_output.put_line('Exception occured while creating ICPS_CORE: '||sqlerrm);

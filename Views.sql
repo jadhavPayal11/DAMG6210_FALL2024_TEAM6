@@ -24,7 +24,7 @@ BEGIN
         EXECUTE IMMEDIATE 'CREATE VIEW ACTIVE_POLICIES_SUMMARY AS
     SELECT
         pol.policy_id,
-        CONCAT(ph.first_name, '' '', ph.last_name) AS policy_holder_name,
+        ph.first_name || '' '' || ph.last_name AS policy_holder_name,
         prov.provider_name,
         inst.insurance_type_name,
         pol.premium_amount,
@@ -68,12 +68,12 @@ BEGIN
         EXECUTE IMMEDIATE 'CREATE VIEW INSURANCE_APPLICATION_OVERVIEW AS
     SELECT
         ia.application_id,
-        CONCAT(ph.first_name, '' '', ph.last_name) AS applicant_name,
+        ph.first_name || '' '' || ph.last_name AS applicant_name,
         ia.application_date,
         it.insurance_type_name AS insurance_type,
         ia.status AS application_status,
         ia.review_date,
-        CONCAT(ag.first_name, '' '', ag.last_name) AS agent_name,
+        ag.first_name || '' '' || ag.last_name AS agent_name,
         CASE
             WHEN ia.status = ''Approved'' THEN ''Approved''
             WHEN ia.status = ''Rejected'' THEN ''Rejected''
@@ -119,12 +119,12 @@ BEGIN
         SELECT
             cl.claim_id,
             cl.policy_id,
-            CONCAT(ph.first_name, '' '', ph.last_name) AS policy_holder_name,
+            ph.first_name || '' '' || ph.last_name AS policy_holder_name,
             cl.claim_type,
             cl.claim_amount,
             cl.claim_date AS submission_date,
             cl.claim_status AS current_status,
-            CONCAT(ag.first_name, '' '', ag.last_name) AS assigned_agent,
+            ag.first_name || '' '' || ag.last_name AS assigned_agent,
             TRUNC(SYSDATE - cl.claim_date) AS days_in_current_status
         FROM
             CLAIM cl
@@ -196,7 +196,7 @@ BEGIN
         EXECUTE IMMEDIATE 'CREATE VIEW POLICYHOLDER_CLAIM_HISTORY AS
         SELECT
             ph.policyholder_id,
-            CONCAT(ph.first_name, '' '', ph.last_name) AS policy_holder_name,
+            ph.first_name || '' '' || ph.last_name AS policy_holder_name,
             pol.policy_id,
             cl.claim_id,
             cl.claim_type,
@@ -236,7 +236,7 @@ BEGIN
         EXECUTE IMMEDIATE 'CREATE VIEW POLICY_EXPIRATION_ALERT AS
         SELECT
             pol.policy_id,
-            CONCAT(ph.first_name, '' '', ph.last_name) AS policy_holder_name,
+            ph.first_name || '' '' || ph.last_name AS policy_holder_name,
             inst.insurance_type_name,
             pol.end_date AS expiration_date,
             TRUNC(pol.end_date - SYSDATE) AS days_until_expiration
@@ -274,7 +274,7 @@ BEGIN
         EXECUTE IMMEDIATE 'CREATE VIEW ADJUSTER_PERFORMANCE_METRICS AS
         SELECT
             ag.agent_id AS adjuster_id,
-            CONCAT(ag.first_name, '' '', ag.last_name) AS adjuster_name,
+            ag.first_name || '' '' || ag.last_name AS adjuster_name,
             COUNT(cl.claim_id) AS total_claims_assigned,
             COUNT(CASE WHEN cl.claim_status = ''Resolved'' THEN 1 END) AS claims_resolved,
             AVG(cl.estimated_settlement_date - cl.claim_date) AS average_resolution_time,
@@ -287,7 +287,7 @@ BEGIN
         LEFT JOIN
             CLAIM cl ON ag.agent_id = cl.agent_id
         GROUP BY
-            ag.agent_id, CONCAT(ag.first_name, '' '', ag.last_name)';
+            ag.agent_id, ag.first_name || '' '' || ag.last_name';
         
         DBMS_OUTPUT.PUT_LINE('View ADJUSTER_PERFORMANCE_METRICS created');
     
@@ -315,7 +315,7 @@ BEGIN
         SELECT
             cl.claim_id,
             cl.policy_id,
-            CONCAT(ph.first_name, '' '', ph.last_name) AS policy_holder_name,
+            ph.first_name || '' '' || ph.last_name AS policy_holder_name,
             cl.claim_amount AS approved_amount,
             cl.estimated_settlement_date AS approval_date,
             pay.payment_status,
