@@ -1,5 +1,8 @@
 SET SERVEROUTPUT ON;
 
+ALTER SESSION SET CURRENT_SCHEMA = ICPS_CORE;
+
+
 DECLARE
 table_exists integer;
 
@@ -304,8 +307,80 @@ BEGIN
         when others then
             dbms_output.put_line('Exception occured while creating PAYMENT table: '||sqlerrm);
         
-    end;   
+    end;
+    
+    -- CLAIM_LOG Table
+    BEGIN
+        table_exists := 0;
+        SELECT COUNT(*)
+        INTO table_exists
+        FROM user_tables
+        WHERE UPPER(table_name) = 'CLAIM_LOG';
+
+        IF (table_exists = 1) THEN
+            EXECUTE IMMEDIATE 'DROP TABLE CLAIM_LOG CASCADE CONSTRAINTS';
+            DBMS_OUTPUT.PUT_LINE('Table CLAIM_LOG dropped');
+        END IF;
+
+        EXECUTE IMMEDIATE 'CREATE TABLE CLAIM_LOG (
+            log_id INTEGER PRIMARY KEY,
+            claim_id INTEGER CONSTRAINT claim_log_claim_id_nn NOT NULL,
+            old_status VARCHAR2(20),
+            new_status VARCHAR2(20),
+            change_date DATE DEFAULT SYSDATE,
+            CONSTRAINT claim_log_claim_fk FOREIGN KEY (claim_id) REFERENCES CLAIM(claim_id) ON DELETE CASCADE
+        )';
+        DBMS_OUTPUT.PUT_LINE('Table CLAIM_LOG created successfully.');
+
+        -- Drop and create CLAIM_LOG_SEQ sequence
+        BEGIN
+            EXECUTE IMMEDIATE 'DROP SEQUENCE CLAIM_LOG_SEQ';
+            DBMS_OUTPUT.PUT_LINE('Sequence CLAIM_LOG_SEQ dropped');
+        EXCEPTION
+            WHEN OTHERS THEN
+                IF SQLCODE != -2289 THEN -- Ignore "Sequence does not exist" error
+                    RAISE;
+                END IF;
+        END;
+
+        EXECUTE IMMEDIATE 'CREATE SEQUENCE CLAIM_LOG_SEQ START WITH 1 INCREMENT BY 1 NOCACHE';
+        DBMS_OUTPUT.PUT_LINE('Sequence CLAIM_LOG_SEQ created successfully.');
+
+        -- Drop and create BEFORE UPDATE trigger for CLAIM table to populate CLAIM_LOG
+        BEGIN
+            EXECUTE IMMEDIATE 'DROP TRIGGER CLAIM_STATUS_UPDATE_TRIGGER';
+            DBMS_OUTPUT.PUT_LINE('Trigger CLAIM_STATUS_UPDATE_TRIGGER dropped');
+        EXCEPTION
+            WHEN OTHERS THEN
+                IF SQLCODE != -4080 THEN -- Ignore "Trigger does not exist" error
+                    RAISE;
+                END IF;
+        END;
+
+        EXECUTE IMMEDIATE '
+            CREATE OR REPLACE TRIGGER CLAIM_STATUS_UPDATE_TRIGGER
+            BEFORE UPDATE OF claim_status ON CLAIM
+            FOR EACH ROW
+            BEGIN
+                -- Insert a log entry for the status update
+                INSERT INTO CLAIM_LOG (log_id, claim_id, old_status, new_status, change_date)
+                VALUES (
+                    CLAIM_LOG_SEQ.NEXTVAL,
+                    :OLD.claim_id,
+                    :OLD.claim_status,
+                    :NEW.claim_status,
+                    SYSDATE
+                );
+            END;
+        ';
+        DBMS_OUTPUT.PUT_LINE('Trigger CLAIM_STATUS_UPDATE_TRIGGER created successfully.');
+    EXCEPTION
+        WHEN OTHERS THEN
+            DBMS_OUTPUT.PUT_LINE('Exception occurred while creating CLAIM_LOG table or associated objects: ' || SQLERRM);
+    END;
 EXCEPTION 
     WHEN OTHERS THEN
         dbms_output.put_line('Exception occured while creating tables');    
 END;
+/
+commit;
