@@ -4,29 +4,6 @@ DECLARE
 user_exists integer;
 
 BEGIN
-    -- creating user ICPS_CORE
-    begin
-        user_exists := 0;
-        
-        select count(*) 
-        into user_exists
-        from all_users
-        where upper(username) = 'ICPS_CORE';
-    
-        if(user_exists = 1) then
-            execute immediate 'drop user ICPS_CORE cascade';
-            dbms_output.put_line('User ICPS_CORE dropped'); 
-        end if;
-        
-        execute immediate 'create user ICPS_CORE identified by IcpsCoreProject2024#';
-        dbms_output.put_line('User ICPS_CORE created');
-        execute immediate 'grant ALTER SESSION, CONNECT, RESOURCE, CREATE VIEW, UNLIMITED TABLESPACE to ICPS_CORE';
-        dbms_output.put_line('ALTER SESSION, CONNECT, RESOURCE, CREATE VIEW, UNLIMITED TABLESPACE granted to ICPS_CORE');
-    exception 
-    when others then
-        dbms_output.put_line('Exception occured while creating ICPS_CORE: '||sqlerrm);
-    end;
-    
     -- creating user PROVIDER
     begin
         user_exists := 0;
@@ -49,6 +26,34 @@ BEGIN
     when others then
         dbms_output.put_line('Exception occured while creating PROVIDER: '||sqlerrm);
     end;
+    
+    -- creating user ICPS_CORE
+    BEGIN
+        SELECT COUNT(*)
+        INTO user_exists
+        FROM all_users
+        WHERE UPPER(username) = 'ICPS_CORE';
+
+        -- Drop the user if it exists
+        IF user_exists = 1 THEN
+            EXECUTE IMMEDIATE 'DROP USER ICPS_CORE CASCADE';
+            DBMS_OUTPUT.PUT_LINE('User ICPS_CORE dropped');
+        END IF;
+
+        -- Create the user
+        EXECUTE IMMEDIATE 'CREATE USER ICPS_CORE IDENTIFIED BY IcpsCoreProject2024#';
+        DBMS_OUTPUT.PUT_LINE('User ICPS_CORE created');
+
+        -- Grant basic privileges to the user
+        EXECUTE IMMEDIATE 'GRANT CONNECT, RESOURCE, ALTER SESSION, CREATE VIEW, UNLIMITED TABLESPACE TO ICPS_CORE';
+        DBMS_OUTPUT.PUT_LINE('Basic privileges granted to ICPS_CORE');
+
+    EXCEPTION
+        WHEN OTHERS THEN
+            DBMS_OUTPUT.PUT_LINE('Exception occurred while creating ICPS_CORE: ' || SQLERRM);
+            RAISE; -- Re-raise exception to halt execution
+    END;
+
     
     -- creating user POLICY_HOLDER
     begin

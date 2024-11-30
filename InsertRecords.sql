@@ -462,3 +462,5 @@ EXCEPTION
     WHEN OTHERS THEN
         dbms_output.put_line('Exception occured while inserting records into tables');    
 END;
+/
+commit;
