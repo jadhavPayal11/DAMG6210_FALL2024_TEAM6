@@ -1,0 +1,61 @@
+SET SERVEROUTPUT ON;
+
+DECLARE
+    trigger_exists INTEGER;
+
+BEGIN
+    -- Check if trigger exists
+    SELECT COUNT(*) INTO trigger_exists
+    FROM all_triggers
+    WHERE trigger_name = 'BEFORE_POLICY_INSERT_TRIGGER';
+
+    -- Drop trigger if exists
+    IF trigger_exists > 0 THEN
+        EXECUTE IMMEDIATE 'DROP TRIGGER BEFORE_POLICY_INSERT_TRIGGER';
+        DBMS_OUTPUT.PUT_LINE('Trigger BEFORE_POLICY_INSERT_TRIGGER dropped.');
+    END IF;
+
+    -- Create trigger
+    EXECUTE IMMEDIATE '
+        CREATE OR REPLACE TRIGGER BEFORE_POLICY_INSERT_TRIGGER
+        BEFORE INSERT ON POLICY
+        FOR EACH ROW
+        DECLARE
+            v_policyholder_count INTEGER;
+        BEGIN
+            -- Validate policyholder existence
+            SELECT COUNT(*)
+            INTO v_policyholder_count
+            FROM POLICYHOLDER
+            WHERE POLICYHOLDER_ID = :NEW.POLICYHOLDER_ID;
+
+            IF v_policyholder_count = 0 THEN
+                RAISE_APPLICATION_ERROR(-20002, ''Cannot insert policy: Policyholder does not exist.'');
+            END IF;
+
+            -- Additional checks can go here (e.g., premium vs coverage validation)
+        END;
+    ';
+
+    DBMS_OUTPUT.PUT_LINE('Trigger BEFORE_POLICY_INSERT_TRIGGER created successfully.');
+EXCEPTION
+    WHEN OTHERS THEN
+        DBMS_OUTPUT.PUT_LINE('An error occurred: ' || SQLERRM);
+END;
+/
+COMMIT;
+
+/*
+Test cases:
+SELECT TRIGGER_NAME, STATUS FROM USER_TRIGGERS WHERE TABLE_NAME = 'POLICY';
+1. Positive but change the 
+INSERT INTO POLICY (POLICY_ID, APPLICATION_ID, POLICYHOLDER_ID, PROVIDER_ID, INSURANCE_TYPE_ID, START_DATE, END_DATE, PREMIUM_AMOUNT, COVERAGE_AMOUNT, POLICY_STATUS)
+VALUES (201, 1, 1, 1, 1, TO_DATE('2024-01-01', 'YYYY-MM-DD'), TO_DATE('2025-01-01', 'YYYY-MM-DD'), 1500, 10000, 'Active');
+
+INSERT INTO POLICY (POLICY_ID, APPLICATION_ID, POLICYHOLDER_ID, PROVIDER_ID, INSURANCE_TYPE_ID, START_DATE, END_DATE, PREMIUM_AMOUNT, COVERAGE_AMOUNT, POLICY_STATUS)
+VALUES (202, 1, 999, 1, 1, TO_DATE('2024-01-01', 'YYYY-MM-DD'), TO_DATE('2025-01-01', 'YYYY-MM-DD'), 1500, 10000, 'Active');
+
+INSERT INTO POLICY (POLICY_ID, APPLICATION_ID, POLICYHOLDER_ID, PROVIDER_ID, INSURANCE_TYPE_ID, START_DATE, END_DATE, PREMIUM_AMOUNT, COVERAGE_AMOUNT, POLICY_STATUS)
+VALUES (203, 1, NULL, 1, 1, TO_DATE('2024-01-01', 'YYYY-MM-DD'), TO_DATE('2025-01-01', 'YYYY-MM-DD'), 1500, 10000, 'Active');
+
+*/
