@@ -38,8 +38,8 @@ BEGIN
             END IF;
 
             -- Log the status change
-            INSERT INTO CLAIM_LOG (claim_id, old_status, new_status, change_date)
-            VALUES (:NEW.claim_id, :OLD.claim_status, :NEW.claim_status, SYSDATE);
+            INSERT INTO CLAIM_LOG (log_id, claim_id, old_status, new_status, change_date)
+            VALUES (CLAIM_LOG_SEQ.NEXTVAL, :NEW.claim_id, :OLD.claim_status, :NEW.claim_status, SYSDATE);
 
             -- Send notification (placeholder for now)
             DBMS_OUTPUT.PUT_LINE(''Notification: '' || v_notification_message);
