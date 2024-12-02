@@ -1,5 +1,8 @@
 SET SERVEROUTPUT ON;
 
+ALTER SESSION SET CURRENT_SCHEMA = ICPS_CORE;
+
+
 DECLARE
 table_exists integer;
 
@@ -226,7 +229,7 @@ BEGIN
             end_date DATE,
             premium_amount NUMBER(10,2) CONSTRAINT policy_premium_check CHECK (premium_amount BETWEEN 20 AND 20000),
             coverage_amount NUMBER(10,2) CONSTRAINT policy_coverage_check CHECK (coverage_amount <= 500000),
-            policy_status VARCHAR2(20) CONSTRAINT policy_status_check CHECK (policy_status IN (''Active'', ''Expired'', ''Canceled'', ''Pending'')),
+            policy_status VARCHAR2(20) CONSTRAINT policy_status_check CHECK (policy_status IN (''Active'', ''Expired'', ''Canceled'', ''In Progress'')),
             CONSTRAINT policy_application_id_fk FOREIGN KEY (application_id) REFERENCES INSURANCE_APPLICATION(application_id) ON DELETE CASCADE,
             CONSTRAINT policy_policyholder_id_fk FOREIGN KEY (policyholder_id) REFERENCES POLICYHOLDER(policyholder_id) ON DELETE CASCADE,
             CONSTRAINT policy_provider_id_fk FOREIGN KEY (provider_id) REFERENCES PROVIDER(provider_id) ON DELETE CASCADE,
@@ -263,8 +266,8 @@ BEGIN
             claim_type VARCHAR2(20),
             claim_description VARCHAR2(255),
             claim_amount NUMBER(10,2), 
-            claim_status VARCHAR2(20),
-            claim_priority VARCHAR2(10),
+            claim_status VARCHAR2(20) CONSTRAINT claim_status_check CHECK (claim_status IN (''In Progress'', ''Approved'', ''Rejected'', ''Settled'')),
+            claim_priority VARCHAR2(10) CONSTRAINT claim_priority_check CHECK (claim_priority IN (''Low'', ''Medium'', ''High'', ''Critical'')),
             estimated_settlement_date DATE,
             CONSTRAINT claim_policy_id_fk FOREIGN KEY (policy_id) REFERENCES POLICY(policy_id) ON DELETE CASCADE,
             CONSTRAINT claim_agent_id_fk FOREIGN KEY (agent_id) REFERENCES AGENT(agent_id) ON DELETE SET NULL
@@ -293,9 +296,9 @@ BEGIN
             payment_id INTEGER PRIMARY KEY,
             claim_id INTEGER CONSTRAINT claim_id_nn NOT NULL,
             payment_date DATE,
-            payment_amount INTEGER,
+            payment_amount NUMBER(10,2),
             payment_method VARCHAR2(20) CONSTRAINT payment_method_check CHECK (payment_method IN (''Check'', ''Direct Deposit'', ''Payment to 3rd Party'')),
-            payment_status VARCHAR2(20) CONSTRAINT payment_status_check CHECK (payment_status IN (''Partial'', ''Completed'', ''Failed'')),
+            payment_status VARCHAR2(20) CONSTRAINT payment_status_check CHECK (payment_status IN (''Partial'', ''Completed'', ''In Progress'')),
             CONSTRAINT payment_claim_id_fk FOREIGN KEY (claim_id) REFERENCES CLAIM(claim_id) ON DELETE CASCADE
         )';
         dbms_output.put_line('Table PAYMENT Created');
@@ -304,8 +307,80 @@ BEGIN
         when others then
             dbms_output.put_line('Exception occured while creating PAYMENT table: '||sqlerrm);
         
-    end;   
+    end;
+    
+    -- CLAIM_LOG Table
+    BEGIN
+        table_exists := 0;
+        SELECT COUNT(*)
+        INTO table_exists
+        FROM user_tables
+        WHERE UPPER(table_name) = 'CLAIM_LOG';
+
+        IF (table_exists = 1) THEN
+            EXECUTE IMMEDIATE 'DROP TABLE CLAIM_LOG CASCADE CONSTRAINTS';
+            DBMS_OUTPUT.PUT_LINE('Table CLAIM_LOG dropped');
+        END IF;
+
+        EXECUTE IMMEDIATE 'CREATE TABLE CLAIM_LOG (
+            log_id INTEGER PRIMARY KEY,
+            claim_id INTEGER CONSTRAINT claim_log_claim_id_nn NOT NULL,
+            old_status VARCHAR2(20),
+            new_status VARCHAR2(20),
+            change_date DATE DEFAULT SYSDATE,
+            CONSTRAINT claim_log_claim_fk FOREIGN KEY (claim_id) REFERENCES CLAIM(claim_id) ON DELETE CASCADE
+        )';
+        DBMS_OUTPUT.PUT_LINE('Table CLAIM_LOG created successfully.');
+
+        -- Drop and create CLAIM_LOG_SEQ sequence
+        BEGIN
+            EXECUTE IMMEDIATE 'DROP SEQUENCE CLAIM_LOG_SEQ';
+            DBMS_OUTPUT.PUT_LINE('Sequence CLAIM_LOG_SEQ dropped');
+        EXCEPTION
+            WHEN OTHERS THEN
+                IF SQLCODE != -2289 THEN -- Ignore "Sequence does not exist" error
+                    RAISE;
+                END IF;
+        END;
+
+        EXECUTE IMMEDIATE 'CREATE SEQUENCE CLAIM_LOG_SEQ START WITH 1 INCREMENT BY 1 NOCACHE';
+        DBMS_OUTPUT.PUT_LINE('Sequence CLAIM_LOG_SEQ created successfully.');
+
+        -- Drop and create BEFORE UPDATE trigger for CLAIM table to populate CLAIM_LOG
+        BEGIN
+            EXECUTE IMMEDIATE 'DROP TRIGGER CLAIM_STATUS_UPDATE_TRIGGER';
+            DBMS_OUTPUT.PUT_LINE('Trigger CLAIM_STATUS_UPDATE_TRIGGER dropped');
+        EXCEPTION
+            WHEN OTHERS THEN
+                IF SQLCODE != -4080 THEN -- Ignore "Trigger does not exist" error
+                    RAISE;
+                END IF;
+        END;
+
+        EXECUTE IMMEDIATE '
+            CREATE OR REPLACE TRIGGER CLAIM_STATUS_UPDATE_TRIGGER
+            BEFORE UPDATE OF claim_status ON CLAIM
+            FOR EACH ROW
+            BEGIN
+                -- Insert a log entry for the status update
+                INSERT INTO CLAIM_LOG (log_id, claim_id, old_status, new_status, change_date)
+                VALUES (
+                    CLAIM_LOG_SEQ.NEXTVAL,
+                    :OLD.claim_id,
+                    :OLD.claim_status,
+                    :NEW.claim_status,
+                    SYSDATE
+                );
+            END;
+        ';
+        DBMS_OUTPUT.PUT_LINE('Trigger CLAIM_STATUS_UPDATE_TRIGGER created successfully.');
+    EXCEPTION
+        WHEN OTHERS THEN
+            DBMS_OUTPUT.PUT_LINE('Exception occurred while creating CLAIM_LOG table or associated objects: ' || SQLERRM);
+    END;
 EXCEPTION 
     WHEN OTHERS THEN
         dbms_output.put_line('Exception occured while creating tables');    
 END;
+/
+commit;
