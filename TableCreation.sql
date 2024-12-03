@@ -1,7 +1,5 @@
 SET SERVEROUTPUT ON;
 
-ALTER SESSION SET CURRENT_SCHEMA = ICPS_CORE;
-
 
 DECLARE
 table_exists integer;
@@ -266,7 +264,7 @@ BEGIN
             claim_type VARCHAR2(20),
             claim_description VARCHAR2(255),
             claim_amount NUMBER(10,2), 
-            claim_status VARCHAR2(20) CONSTRAINT claim_status_check CHECK (claim_status IN (''In Progress'', ''Approved'', ''Rejected'', ''Settled'')),
+            claim_status VARCHAR2(20) CONSTRAINT claim_status_check CHECK (claim_status IN (''In Progress'', ''Approved'', ''Rejected'', ''Settled'', ''Validated'')),
             claim_priority VARCHAR2(10) CONSTRAINT claim_priority_check CHECK (claim_priority IN (''Low'', ''Medium'', ''High'', ''Critical'')),
             estimated_settlement_date DATE,
             CONSTRAINT claim_policy_id_fk FOREIGN KEY (policy_id) REFERENCES POLICY(policy_id) ON DELETE CASCADE,
