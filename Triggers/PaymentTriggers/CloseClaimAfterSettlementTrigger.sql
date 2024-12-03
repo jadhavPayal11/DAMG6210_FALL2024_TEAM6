@@ -47,7 +47,6 @@ END;
 COMMIT;
 
 /*
-/*
 UPDATE PAYMENT
 SET PAYMENT_STATUS = 'Completed'
 WHERE PAYMENT_ID = 4;
@@ -56,4 +55,3 @@ WHERE PAYMENT_ID = 4;
 -- CLAIM_STATUS for CLAIM_ID associated with PAYMENT_ID 4 should be updated to "Closed".
 */
 
-*/
