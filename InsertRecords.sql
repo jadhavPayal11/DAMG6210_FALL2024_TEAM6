@@ -12,30 +12,22 @@ DECLARE
 
 BEGIN
 
-    --ADDRESS_SEQ sequence
-    begin
-        seq_exists := 0;
-        select count(*)
-        into seq_exists
-        from user_sequences
-        where upper(sequence_name) = 'ADDRESS_SEQ';
+    Begin
+        execute immediate 'alter sequence ADDRESS_SEQ restart start with 1';
+        execute immediate 'alter sequence INS_TYPE_SEQ restart start with 1';
+        execute immediate 'alter sequence POLICY_HOLDER_SEQ restart start with 1';
+        execute immediate 'alter sequence PROVIDER_SEQ restart start with 1';
+        execute immediate 'alter sequence AGENT_SEQ restart start with 1';
+        execute immediate 'alter sequence INS_APPL_SEQ restart start with 1';
+        execute immediate 'alter sequence POLICY_SEQ restart start with 1';
+        execute immediate 'alter sequence CLAIM_SEQ restart start with 1';
+        execute immediate 'alter sequence PAYMENT_SEQ restart start with 1';
         
-        if(seq_exists = 1)then
-            execute immediate 'drop sequence ADDRESS_SEQ';
-            dbms_output.put_line('Sequence ADDRESS_SEQ dropped'); 
-         end if;
-         execute immediate 'CREATE SEQUENCE ADDRESS_SEQ
-                            START WITH 1
-                            INCREMENT BY 1
-                            MAXVALUE 10000
-                            NOCACHE
-                            NOCYCLE';
-         
-         dbms_output.put_line('Sequence ADDRESS_SEQ created');
-       
-    exception 
-        when others then
-            dbms_output.put_line('Exception occured while creating ADDRESS_SEQ sequence: ' || sqlerrm);
+        DBMS_OUTPUT.PUT_LINE('Sequences restarted successfully!');
+        
+    Exception
+    when others then
+            DBMS_OUTPUT.PUT_LINE('Exception occurred while restarting sequences: ' || SQLERRM);
     end;
     
     -- Insert data into the ADDRESS table
@@ -87,32 +79,6 @@ BEGIN
             rollback;
     end;
     
-    --INS_TYPE_SEQ sequence
-    begin
-        seq_exists := 0;
-        select count(*)
-        into seq_exists
-        from user_sequences
-        where upper(sequence_name) = 'INS_TYPE_SEQ';
-        
-        if(seq_exists = 1)then
-            execute immediate 'drop sequence INS_TYPE_SEQ';
-            dbms_output.put_line('Sequence INS_TYPE_SEQ dropped'); 
-         end if;
-         execute immediate 'CREATE SEQUENCE INS_TYPE_SEQ
-                            START WITH 1
-                            INCREMENT BY 1
-                            MAXVALUE 10000
-                            NOCACHE
-                            NOCYCLE';
-         
-         dbms_output.put_line('Sequence INS_TYPE_SEQ created');
-       
-    exception 
-        when others then
-            dbms_output.put_line('Exception occured while creating INS_TYPE_SEQ sequence: ' || sqlerrm);
-    end;
-    
     -- Insert data into the INSURANCE_TYPE table
     begin
         row_count := 0;
@@ -155,32 +121,6 @@ BEGIN
         when others then
             dbms_output.put_line('Exception occured while inserting data into INSURANCE_TYPE table: '||sqlerrm);
             rollback;
-    end;
-    
-    --POLICY_HOLDER_SEQ sequence
-    begin
-        seq_exists := 0;
-        select count(*)
-        into seq_exists
-        from user_sequences
-        where upper(sequence_name) = 'POLICY_HOLDER_SEQ';
-        
-        if(seq_exists = 1)then
-            execute immediate 'drop sequence POLICY_HOLDER_SEQ';
-            dbms_output.put_line('Sequence POLICY_HOLDER_SEQ dropped'); 
-         end if;
-         execute immediate 'CREATE SEQUENCE POLICY_HOLDER_SEQ
-                            START WITH 1
-                            INCREMENT BY 1
-                            MAXVALUE 10000
-                            NOCACHE
-                            NOCYCLE';
-         
-         dbms_output.put_line('Sequence POLICY_HOLDER_SEQ created');
-       
-    exception 
-        when others then
-            dbms_output.put_line('Exception occured while creating POLICY_HOLDER_SEQ sequence: ' || sqlerrm);
     end;
     
     -- Insert data into the POLICYHOLDER table
@@ -244,32 +184,6 @@ BEGIN
             dbms_output.put_line('Exception occured while inserting data into POLICYHOLDER table: '||sqlerrm);
     end;
     
-    --PROVIDER_SEQ sequence
-    begin
-        seq_exists := 0;
-        select count(*)
-        into seq_exists
-        from user_sequences
-        where upper(sequence_name) = 'PROVIDER_SEQ';
-        
-        if(seq_exists = 1)then
-            execute immediate 'drop sequence PROVIDER_SEQ';
-            dbms_output.put_line('Sequence PROVIDER_SEQ dropped'); 
-         end if;
-         execute immediate 'CREATE SEQUENCE PROVIDER_SEQ
-                            START WITH 1
-                            INCREMENT BY 1
-                            MAXVALUE 10000
-                            NOCACHE
-                            NOCYCLE';
-         
-         dbms_output.put_line('Sequence PROVIDER_SEQ created');
-       
-    exception 
-        when others then
-            dbms_output.put_line('Exception occured while creating PROVIDER_SEQ sequence: ' || sqlerrm);
-    end;
-    
     -- Insert data into the PROVIDER table
     Begin
         -- Check if records exist in the PROVIDER table
@@ -317,32 +231,6 @@ BEGIN
             Rollback;
         When Others Then
             Dbms_Output.Put_Line('Exception occurred while inserting data into PROVIDER table: ' || Sqlerrm);
-    end;
-    
-    --AGENT_SEQ sequence
-    begin
-        seq_exists := 0;
-        select count(*)
-        into seq_exists
-        from user_sequences
-        where upper(sequence_name) = 'AGENT_SEQ';
-        
-        if(seq_exists = 1)then
-            execute immediate 'drop sequence AGENT_SEQ';
-            dbms_output.put_line('Sequence AGENT_SEQ dropped'); 
-         end if;
-         execute immediate 'CREATE SEQUENCE AGENT_SEQ
-                            START WITH 1
-                            INCREMENT BY 1
-                            MAXVALUE 10000
-                            NOCACHE
-                            NOCYCLE';
-         
-         dbms_output.put_line('Sequence AGENT_SEQ created');
-       
-    exception 
-        when others then
-            dbms_output.put_line('Exception occured while creating AGENT_SEQ sequence: ' || sqlerrm);
     end;
 
     -- Insert data into the AGENT table
@@ -394,32 +282,6 @@ BEGIN
             Dbms_Output.Put_Line('Exception occurred while inserting data into AGENT table: ' || Sqlerrm);
     End;
     
-    --INS_APPL_SEQ sequence
-    begin
-        seq_exists := 0;
-        select count(*)
-        into seq_exists
-        from user_sequences
-        where upper(sequence_name) = 'INS_APPL_SEQ';
-        
-        if(seq_exists = 1)then
-            execute immediate 'drop sequence INS_APPL_SEQ';
-            dbms_output.put_line('Sequence INS_APPL_SEQ dropped'); 
-         end if;
-         execute immediate 'CREATE SEQUENCE INS_APPL_SEQ
-                            START WITH 1
-                            INCREMENT BY 1
-                            MAXVALUE 10000
-                            NOCACHE
-                            NOCYCLE';
-         
-         dbms_output.put_line('Sequence INS_APPL_SEQ created');
-       
-    exception 
-        when others then
-            dbms_output.put_line('Exception occured while creating INS_APPL_SEQ sequence: ' || sqlerrm);
-    end;
-    
     -- Insert data into the INSURANCE_APPLICATION table
     begin
     -- Check if records exist in the INSURANCE_APPLICATION table
@@ -467,32 +329,6 @@ BEGIN
             rollback;
         when others then
             DBMS_OUTPUT.PUT_LINE('Exception occurred while inserting data into INSURANCE_APPLICATION table: ' || SQLERRM);
-    end;
-    
-    --POLICY_SEQ sequence
-    begin
-        seq_exists := 0;
-        select count(*)
-        into seq_exists
-        from user_sequences
-        where upper(sequence_name) = 'POLICY_SEQ';
-        
-        if(seq_exists = 1)then
-            execute immediate 'drop sequence POLICY_SEQ';
-            dbms_output.put_line('Sequence POLICY_SEQ dropped'); 
-         end if;
-         execute immediate 'CREATE SEQUENCE POLICY_SEQ
-                            START WITH 1
-                            INCREMENT BY 1
-                            MAXVALUE 10000
-                            NOCACHE
-                            NOCYCLE';
-         
-         dbms_output.put_line('Sequence POLICY_SEQ created');
-       
-    exception 
-        when others then
-            dbms_output.put_line('Exception occured while creating POLICY_SEQ sequence: ' || sqlerrm);
     end;
     
     -- Insert data into the POLICY table
@@ -544,32 +380,6 @@ BEGIN
             DBMS_OUTPUT.PUT_LINE('Exception occurred while inserting data into POLICY table: ' || SQLERRM);
     end;
     
-    --CLAIM_SEQ sequence
-    begin
-        seq_exists := 0;
-        select count(*)
-        into seq_exists
-        from user_sequences
-        where upper(sequence_name) = 'CLAIM_SEQ';
-        
-        if(seq_exists = 1)then
-            execute immediate 'drop sequence CLAIM_SEQ';
-            dbms_output.put_line('Sequence CLAIM_SEQ dropped'); 
-         end if;
-         execute immediate 'CREATE SEQUENCE CLAIM_SEQ
-                            START WITH 1
-                            INCREMENT BY 1
-                            MAXVALUE 10000
-                            NOCACHE
-                            NOCYCLE';
-         
-         dbms_output.put_line('Sequence CLAIM_SEQ created');
-       
-    exception 
-        when others then
-            dbms_output.put_line('Exception occured while creating CLAIM_SEQ sequence: ' || sqlerrm);
-    end;
-    
     -- Insert data into the CLAIM table
     Begin
         -- Check if records exist in the CLAIM table
@@ -619,32 +429,6 @@ BEGIN
             Dbms_Output.Put_Line('Exception occurred while inserting data into CLAIM table: ' || Sqlerrm);
     End;
     
-    --PAYMENT_SEQ sequence
-    begin
-        seq_exists := 0;
-        select count(*)
-        into seq_exists
-        from user_sequences
-        where upper(sequence_name) = 'PAYMENT_SEQ';
-        
-        if(seq_exists = 1)then
-            execute immediate 'drop sequence PAYMENT_SEQ';
-            dbms_output.put_line('Sequence PAYMENT_SEQ dropped'); 
-         end if;
-         execute immediate 'CREATE SEQUENCE PAYMENT_SEQ
-                            START WITH 1
-                            INCREMENT BY 1
-                            MAXVALUE 10000
-                            NOCACHE
-                            NOCYCLE';
-         
-         dbms_output.put_line('Sequence PAYMENT_SEQ created');
-       
-    exception 
-        when others then
-            dbms_output.put_line('Exception occured while creating PAYMENT_SEQ sequence: ' || sqlerrm);
-    end;
-    
     begin
         -- Check if records exist in the PAYMENT table
         ROW_COUNT := 0;
@@ -674,7 +458,7 @@ BEGIN
         values (PAYMENT_SEQ.nextval, 4, to_date('2023-06-30', 'YYYY-MM-DD'), 7000.00, 'Check', 'Completed');
         
         insert into PAYMENT (PAYMENT_ID, CLAIM_ID, PAYMENT_DATE, PAYMENT_AMOUNT, PAYMENT_METHOD, PAYMENT_STATUS)
-        values (PAYMENT_SEQ.nextval, 5, to_date('2023-07-05', 'YYYY-MM-DD'), 20000.00, 'Direct Deposit', 'Failed');
+        values (PAYMENT_SEQ.nextval, 5, to_date('2023-07-05', 'YYYY-MM-DD'), 20000.00, 'Direct Deposit', 'In Progress');
         
         commit;
         DBMS_OUTPUT.PUT_LINE('Records inserted into PAYMENT table successfully!');
