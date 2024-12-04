@@ -61,4 +61,3 @@ VALUES (101, 1, TO_DATE('2024-12-01', 'YYYY-MM-DD'), 'Direct Deposit', 'Complete
 -- If CLAIM_AMOUNT for CLAIM_ID 1 is 2500, then PAYMENT_AMOUNT = 2000.
 */
 
-*/

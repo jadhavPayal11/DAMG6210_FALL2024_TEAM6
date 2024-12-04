@@ -257,13 +257,16 @@ BEGIN
         Values (AGENT_SEQ.nextval, 1, 'David', 'Johnson', 'Adjuster', 1, 'david.johnson@example.com', '5551003000');
         
         Insert Into Agent (Agent_Id, Provider_Id, First_Name, Last_Name, Designation, Manager_Id, Email, Contact)
-        Values (AGENT_SEQ.nextval, 2, 'Emily', 'Davis', 'Salesman', 1, 'emily.davis@example.com', '5551004000');
+        Values (AGENT_SEQ.nextval, 1, 'Emily', 'Davis', 'Salesman', 1, 'emily.davis@example.com', '5551004000');
         
         Insert Into Agent (Agent_Id, Provider_Id, First_Name, Last_Name, Designation, Manager_Id, Email, Contact)
         Values (AGENT_SEQ.nextval, 3, 'James', 'Brown', 'Manager', Null, 'james.brown@example.com', '5551005000');
         
         Insert Into Agent (Agent_Id, Provider_Id, First_Name, Last_Name, Designation, Manager_Id, Email, Contact)
-        Values (AGENT_SEQ.nextval, 2, 'Olivia', 'Wilson', 'Adjuster', 4, 'olivia.wilson@example.com', '5551006000');
+        Values (AGENT_SEQ.nextval, 3, 'Olivia', 'Wilson', 'Adjuster', 4, 'olivia.wilson@example.com', '5551006000');
+        
+        Insert Into Agent (Agent_Id, Provider_Id, First_Name, Last_Name, Designation, Manager_Id, Email, Contact)
+        Values (AGENT_SEQ.nextval, 3, 'John', 'Martin', 'Salesman', 4, 'john.martin@example.com', '5551007000');
         
         Commit;
         Dbms_Output.Put_Line('Records inserted into AGENT table successfully!');
@@ -300,19 +303,19 @@ BEGIN
         
         -- Insert sample data into the INSURANCE_APPLICATION table
         insert into INSURANCE_APPLICATION (APPLICATION_ID, POLICYHOLDER_ID, INSURANCE_TYPE_ID, APPLICATION_DATE, STATUS, REVIEW_DATE, AGENT_ID, COMMENTS)
-        values (INS_APPL_SEQ.nextval, 1, 1, to_date('2023-01-15', 'YYYY-MM-DD'), 'Pending', to_date('2023-01-20', 'YYYY-MM-DD'), 1, 'Initial application pending review');
+        values (INS_APPL_SEQ.nextval, 1, 1, to_date('2023-01-15', 'YYYY-MM-DD'), 'In Progress', to_date('2023-01-20', 'YYYY-MM-DD'), 3, 'Initial application pending review');
         
         insert into INSURANCE_APPLICATION (APPLICATION_ID, POLICYHOLDER_ID, INSURANCE_TYPE_ID, APPLICATION_DATE, STATUS, REVIEW_DATE, AGENT_ID, COMMENTS)
-        values (INS_APPL_SEQ.nextval, 2, 2, to_date('2023-02-10', 'YYYY-MM-DD'), 'Approved', to_date('2023-02-15', 'YYYY-MM-DD'), 2, 'Approved after verification');
+        values (INS_APPL_SEQ.nextval, 2, 2, to_date('2023-02-10', 'YYYY-MM-DD'), 'Approved', to_date('2023-02-15', 'YYYY-MM-DD'), 1, 'Approved after verification');
         
         insert into INSURANCE_APPLICATION (APPLICATION_ID, POLICYHOLDER_ID, INSURANCE_TYPE_ID, APPLICATION_DATE, STATUS, REVIEW_DATE, AGENT_ID, COMMENTS)
-        values (INS_APPL_SEQ.nextval, 3, 3, to_date('2023-03-05', 'YYYY-MM-DD'), 'Rejected', to_date('2023-03-10', 'YYYY-MM-DD'), 3, 'Rejected due to incomplete documentation');
+        values (INS_APPL_SEQ.nextval, 3, 3, to_date('2023-03-05', 'YYYY-MM-DD'), 'Rejected', to_date('2023-03-10', 'YYYY-MM-DD'), 1, 'Rejected due to incomplete documentation');
         
         insert into INSURANCE_APPLICATION (APPLICATION_ID, POLICYHOLDER_ID, INSURANCE_TYPE_ID, APPLICATION_DATE, STATUS, REVIEW_DATE, AGENT_ID, COMMENTS)
-        values (INS_APPL_SEQ.nextval, 4, 4, to_date('2023-04-12', 'YYYY-MM-DD'), 'Pending', to_date('2023-04-30', 'YYYY-MM-DD'), 4, 'Application under review');
+        values (INS_APPL_SEQ.nextval, 4, 4, to_date('2023-04-12', 'YYYY-MM-DD'), 'In Progress', to_date('2023-04-30', 'YYYY-MM-DD'), 6, 'Application under review');
         
         insert into INSURANCE_APPLICATION (APPLICATION_ID, POLICYHOLDER_ID, INSURANCE_TYPE_ID, APPLICATION_DATE, STATUS, REVIEW_DATE, AGENT_ID, COMMENTS)
-        values (INS_APPL_SEQ.nextval, 5, 5, to_date('2023-05-20', 'YYYY-MM-DD'), 'Approved', to_date('2023-05-25', 'YYYY-MM-DD'), 5, 'Approved and policy issued');
+        values (INS_APPL_SEQ.nextval, 5, 5, to_date('2023-05-20', 'YYYY-MM-DD'), 'Approved', to_date('2023-05-25', 'YYYY-MM-DD'), 2, 'Approved and policy issued');
         
         commit;
         DBMS_OUTPUT.PUT_LINE('Records inserted into INSURANCE_APPLICATION table successfully!');
