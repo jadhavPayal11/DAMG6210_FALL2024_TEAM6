@@ -268,7 +268,9 @@ CREATE OR REPLACE PACKAGE BODY APPLICATION_MANAGEMENT_PKG AS
     PROCEDURE REVIEW_APPLICATION_PROC(
         p_application_id IN INSURANCE_APPLICATION.APPLICATION_ID%TYPE,
         p_application_status IN INSURANCE_APPLICATION.STATUS%TYPE,
-        p_comments IN INSURANCE_APPLICATION.COMMENTS%TYPE
+        p_comments IN INSURANCE_APPLICATION.COMMENTS%TYPE,
+        p_premium_amount IN POLICY.PREMIUM_AMOUNT%TYPE,
+        p_coverage_amount IN POLICY.COVERAGE_AMOUNT%TYPE
     ) AS
     
     v_agent_id AGENT.AGENT_ID%TYPE;
@@ -289,6 +291,9 @@ CREATE OR REPLACE PACKAGE BODY APPLICATION_MANAGEMENT_PKG AS
     v_country ADDRESS.COUNTRY%TYPE;
     v_provider_name PROVIDER.provider_name%TYPE;
     v_insurance_type INSURANCE_TYPE.insurance_type_name%TYPE;
+    
+    v_policy_id POLICY.POLICY_ID%TYPE;
+    v_policy_status POLICY.POLICY_STATUS%TYPE;
     
     e_check_violation EXCEPTION;
     PRAGMA EXCEPTION_INIT(e_check_violation, -02290);
@@ -336,6 +341,8 @@ CREATE OR REPLACE PACKAGE BODY APPLICATION_MANAGEMENT_PKG AS
             v_country,
             v_provider_name,
             v_insurance_type) THEN
+            
+            -- Fetching Manager Details
             BEGIN
                 SELECT a.agent_id, p.provider_id, i.policyholder_id, i.insurance_type_id
                 INTO v_agent_id, v_provider_id, v_policyholder_id, v_insurance_type_id
@@ -357,48 +364,63 @@ CREATE OR REPLACE PACKAGE BODY APPLICATION_MANAGEMENT_PKG AS
             END;
             
             BEGIN
-                UPDATE INSURANCE_APPLICATION
-                SET STATUS = p_application_status,
-                REVIEW_DATE = sysdate,
-                AGENT_ID = v_agent_id,
-                COMMENTS = p_comments 
-                WHERE APPLICATION_ID = p_application_id;
-                COMMIT;
-                dbms_output.put_line('Application has been reviewed and the status is updated to ' || p_application_status);
-            EXCEPTION 
-                WHEN e_check_violation THEN
-                dbms_output.put_line('Please enter a valid application status');
+                SELECT policy_id, policy_status
+                INTO v_policy_id, v_policy_status
+                FROM policy
+                WHERE application_id = p_application_id
+                AND policyholder_id = v_policyholder_id
+                AND provider_id = v_provider_id
+                AND insurance_type_id = v_insurance_type_id
+                AND policy_status in ('In Progress', 'Active');
+                dbms_output.put_line('Application is approved and a policy already exists with Policy Id ' || v_policy_id || ' and status ' || v_policy_status);
+            EXCEPTION
+                WHEN NO_DATA_FOUND THEN
+                    BEGIN
+                        UPDATE INSURANCE_APPLICATION
+                        SET STATUS = p_application_status,
+                        REVIEW_DATE = sysdate,
+                        AGENT_ID = v_agent_id,
+                        COMMENTS = p_comments 
+                        WHERE APPLICATION_ID = p_application_id;
+                        COMMIT;
+                        dbms_output.put_line('Application has been reviewed and the status is updated to ' || p_application_status);
+                        BEGIN
+                        INSERT INTO POLICY VALUES(
+                            POLICY_SEQ.nextval,
+                            p_application_id,
+                            v_policyholder_id,
+                            v_provider_id,
+                            v_insurance_type_id,
+                            sysdate,
+                            ADD_MONTHS(sysdate,12),
+                            p_premium_amount,
+                            p_coverage_amount,
+                            'In Progress'
+                        );
+                        COMMIT;
+                        dbms_output.put_line('Policy with policy id ' || POLICY_SEQ.currval || ' has been created and is In Progress'); 
+                    EXCEPTION 
+                        WHEN DUP_VAL_ON_INDEX THEN
+                            DBMS_OUTPUT.PUT_LINE('Policy already exists, check for duplicate policy records');
+                            rollback;
+                        WHEN E_NOT_NULL_VIOLATION Then
+                            DBMS_OUTPUT.PUT_LINE('Mandatory columns cannot be null in POLICY table ');
+                            rollback;
+                        WHEN E_FK_VIOLATION THEN
+                            DBMS_OUTPUT.PUT_LINE('Foreign key violation, enter valid application, policyholder, provider, or insurance type ID');
+                            rollback;
+                        WHEN OTHERS THEN
+                            DBMS_OUTPUT.PUT_LINE('Exception occurred while inserting data into POLICY table: ' || SQLERRM);
+                    END;
+                    EXCEPTION 
+                        WHEN e_check_violation THEN
+                        dbms_output.put_line('Please enter a valid application status');
+                        WHEN OTHERS THEN
+                        dbms_output.put_line('Exception occured while updating the application status: ' || sqlerrm);
+                    END;
+                    
                 WHEN OTHERS THEN
-                dbms_output.put_line('Exception occured while updating the application status: ' || sqlerrm);
-            END;
-            
-            BEGIN
-                INSERT INTO POLICY VALUES(
-                    POLICY_SEQ.nextval,
-                    p_application_id,
-                    v_policyholder_id,
-                    v_provider_id,
-                    v_insurance_type_id,
-                    sysdate,
-                    ADD_MONTHS(sysdate,12),
-                    150,
-                    10000,
-                    'Active'
-                );
-                COMMIT;
-                dbms_output.put_line('Policy with policy id ' || POLICY_SEQ.currval || ' has been created and is active'); 
-            EXCEPTION 
-                WHEN DUP_VAL_ON_INDEX THEN
-                    DBMS_OUTPUT.PUT_LINE('Policy already exists, check for duplicate policy records');
-                    rollback;
-                WHEN E_NOT_NULL_VIOLATION Then
-                    DBMS_OUTPUT.PUT_LINE('Mandatory columns cannot be null in POLICY table ');
-                    rollback;
-                WHEN E_FK_VIOLATION THEN
-                    DBMS_OUTPUT.PUT_LINE('Foreign key violation, enter valid application, policyholder, provider, or insurance type ID');
-                    rollback;
-                WHEN OTHERS THEN
-                    DBMS_OUTPUT.PUT_LINE('Exception occurred while inserting data into POLICY table: ' || SQLERRM);
+                dbms_output.put_line('Exception occured while fetching existing policy details: ' || sqlerrm);
             END;
         ELSE
             dbms_output.put_line('Please enter valid application data...');
@@ -417,7 +439,9 @@ CREATE OR REPLACE PACKAGE BODY APPLICATION_MANAGEMENT_PKG AS
         SELECT status 
         INTO v_status
         FROM INSURANCE_APPLICATION
-        where application_id = p_application_id;
+        WHERE application_id = p_application_id;
+        
+        RETURN v_status;
     EXCEPTION
     WHEN NO_DATA_FOUND THEN
                     dbms_output.put_line('Please enter a valid application id');
