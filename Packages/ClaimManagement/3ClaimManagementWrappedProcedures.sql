@@ -27,7 +27,7 @@ BEGIN
 END SubmitClaimWrapper;
 /
 -- Grant execute on SubmitClaimWrapper to PolicyHolder role
-GRANT EXECUTE ON SubmitClaimWrapper TO Policy_Holder;
+GRANT EXECUTE ON ICPS_CORE.SubmitClaimWrapper TO Policy_Holder;
 
 -- Wrapper for ValidateClaim
 CREATE OR REPLACE PROCEDURE ValidateClaimWrapper (
