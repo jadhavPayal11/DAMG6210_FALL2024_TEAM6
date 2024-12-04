@@ -75,14 +75,18 @@ CREATE OR REPLACE FUNCTION VALIDATE_APPLICATION_WRAPPER_FUNC(
 CREATE OR REPLACE PROCEDURE REVIEW_APPLICATION_WRAPPER_PROC(
         p_application_id IN INSURANCE_APPLICATION.APPLICATION_ID%TYPE,
         p_application_status IN INSURANCE_APPLICATION.STATUS%TYPE,
-        p_comments IN INSURANCE_APPLICATION.COMMENTS%TYPE
+        p_comments IN INSURANCE_APPLICATION.COMMENTS%TYPE,
+        p_premium_amount IN POLICY.PREMIUM_AMOUNT%TYPE,
+        p_coverage_amount IN POLICY.COVERAGE_AMOUNT%TYPE
     ) AS
     
     BEGIN
         APPLICATION_MANAGEMENT_PKG.REVIEW_APPLICATION_PROC(
             p_application_id,
             p_application_status,
-            p_comments);
+            p_comments,
+            p_premium_amount,
+            p_coverage_amount);
     EXCEPTION
     WHEN OTHERS THEN
         dbms_output.put_line('Exception occured when creating REVIEW_APPLICATION_WRAPPER_PROC: ' || sqlerrm);
