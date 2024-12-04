@@ -13,7 +13,7 @@ CREATE OR REPLACE PACKAGE ClaimLifecyclePackage AS
     );
 
     -- Validate a submitted claim
-    PROCEDURE ValidateClaim( --User: Manager, Adjuster
+    PROCEDURE ValidateClaim( -- User: Manager, Adjuster
         p_claim_id IN CLAIM.CLAIM_ID%TYPE
     );
 
@@ -25,7 +25,7 @@ CREATE OR REPLACE PACKAGE ClaimLifecyclePackage AS
     );
 
     -- Helper function to check if a claim is valid for validation
-    FUNCTION IsClaimValidForValidation( 
+    FUNCTION IsClaimValidForValidation(
         p_claim_id IN CLAIM.CLAIM_ID%TYPE
     ) RETURN BOOLEAN;
 
@@ -37,6 +37,11 @@ CREATE OR REPLACE PACKAGE ClaimLifecyclePackage AS
     -- Helper function to check if a policy is active and not expired
     FUNCTION IsPolicyActive(
         p_policy_id IN POLICY.POLICY_ID%TYPE
+    ) RETURN BOOLEAN;
+
+    -- Helper function to validate if a claim is ready for processing
+    FUNCTION IsClaimValidForProcessing(
+        p_claim_id IN CLAIM.CLAIM_ID%TYPE
     ) RETURN BOOLEAN;
 END ClaimLifecyclePackage;
 /
