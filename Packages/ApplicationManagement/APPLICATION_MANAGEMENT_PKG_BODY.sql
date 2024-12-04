@@ -163,9 +163,9 @@ CREATE OR REPLACE PACKAGE BODY APPLICATION_MANAGEMENT_PKG AS
                 AND p.provider_id = v_provider_id
                 AND ia.insurance_type_id = it.insurance_type_id
                 AND it.insurance_type_id = v_insurance_type_id
-                AND ia.status = 'Pending';
+                AND ia.status = 'In Progress';
                 
-                dbms_output.put_line('Application already exists with application id: ' || v_application_id);
+                dbms_output.put_line('Application already exists with application id ' || v_application_id || ' and status In Progress' );
             
             EXCEPTION
                 WHEN NO_DATA_FOUND THEN   
@@ -175,7 +175,7 @@ CREATE OR REPLACE PACKAGE BODY APPLICATION_MANAGEMENT_PKG AS
                             v_policyholder_id,
                             v_insurance_type_id,
                             sysdate,
-                            'Pending',
+                            'In Progress',
                             null,
                             v_agent_id,
                             'Application created'
@@ -341,10 +341,12 @@ CREATE OR REPLACE PACKAGE BODY APPLICATION_MANAGEMENT_PKG AS
                 INTO v_agent_id, v_provider_id, v_policyholder_id, v_insurance_type_id
                 FROM INSURANCE_APPLICATION i,
                 AGENT a,
+                AGENT m,
                 PROVIDER p
                 WHERE i.agent_id = a.agent_id
                 AND a.provider_id = p.provider_id
-                AND upper(a.designation) = 'MANAGER'
+                AND a.manager_id = m.agent_id
+                AND upper(m.designation) = 'MANAGER'
                 AND application_id = p_application_id
                 AND ROWNUM = 1;
             EXCEPTION
