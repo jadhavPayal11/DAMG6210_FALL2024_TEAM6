@@ -303,7 +303,7 @@ BEGIN
         
         -- Insert sample data into the INSURANCE_APPLICATION table
         insert into INSURANCE_APPLICATION (APPLICATION_ID, POLICYHOLDER_ID, INSURANCE_TYPE_ID, APPLICATION_DATE, STATUS, REVIEW_DATE, AGENT_ID, COMMENTS)
-        values (INS_APPL_SEQ.nextval, 1, 1, to_date('2023-01-15', 'YYYY-MM-DD'), 'Pending', to_date('2023-01-20', 'YYYY-MM-DD'), 3, 'Initial application pending review');
+        values (INS_APPL_SEQ.nextval, 1, 1, to_date('2023-01-15', 'YYYY-MM-DD'), 'In Progress', to_date('2023-01-20', 'YYYY-MM-DD'), 3, 'Initial application pending review');
         
         insert into INSURANCE_APPLICATION (APPLICATION_ID, POLICYHOLDER_ID, INSURANCE_TYPE_ID, APPLICATION_DATE, STATUS, REVIEW_DATE, AGENT_ID, COMMENTS)
         values (INS_APPL_SEQ.nextval, 2, 2, to_date('2023-02-10', 'YYYY-MM-DD'), 'Approved', to_date('2023-02-15', 'YYYY-MM-DD'), 1, 'Approved after verification');
@@ -312,7 +312,7 @@ BEGIN
         values (INS_APPL_SEQ.nextval, 3, 3, to_date('2023-03-05', 'YYYY-MM-DD'), 'Rejected', to_date('2023-03-10', 'YYYY-MM-DD'), 1, 'Rejected due to incomplete documentation');
         
         insert into INSURANCE_APPLICATION (APPLICATION_ID, POLICYHOLDER_ID, INSURANCE_TYPE_ID, APPLICATION_DATE, STATUS, REVIEW_DATE, AGENT_ID, COMMENTS)
-        values (INS_APPL_SEQ.nextval, 4, 4, to_date('2023-04-12', 'YYYY-MM-DD'), 'Pending', to_date('2023-04-30', 'YYYY-MM-DD'), 6, 'Application under review');
+        values (INS_APPL_SEQ.nextval, 4, 4, to_date('2023-04-12', 'YYYY-MM-DD'), 'In Progress', to_date('2023-04-30', 'YYYY-MM-DD'), 6, 'Application under review');
         
         insert into INSURANCE_APPLICATION (APPLICATION_ID, POLICYHOLDER_ID, INSURANCE_TYPE_ID, APPLICATION_DATE, STATUS, REVIEW_DATE, AGENT_ID, COMMENTS)
         values (INS_APPL_SEQ.nextval, 5, 5, to_date('2023-05-20', 'YYYY-MM-DD'), 'Approved', to_date('2023-05-25', 'YYYY-MM-DD'), 2, 'Approved and policy issued');
