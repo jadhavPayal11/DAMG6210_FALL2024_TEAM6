@@ -266,7 +266,7 @@ BEGIN
         Values (AGENT_SEQ.nextval, 3, 'Olivia', 'Wilson', 'Adjuster', 4, 'olivia.wilson@example.com', '5551006000');
         
         Insert Into Agent (Agent_Id, Provider_Id, First_Name, Last_Name, Designation, Manager_Id, Email, Contact)
-        Values (AGENT_SEQ.nextval, 3, 'John', 'Martin', 'Salesman', 4, 'olivia.wilson@example.com', '5551006000');
+        Values (AGENT_SEQ.nextval, 3, 'John', 'Martin', 'Salesman', 4, 'john.martin@example.com', '5551007000');
         
         Commit;
         Dbms_Output.Put_Line('Records inserted into AGENT table successfully!');

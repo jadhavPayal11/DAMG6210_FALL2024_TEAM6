@@ -21,6 +21,14 @@ CREATE OR REPLACE PACKAGE BODY APPLICATION_MANAGEMENT_PKG AS
     v_provider_id PROVIDER.PROVIDER_ID%TYPE;
     v_agent_id AGENT.AGENT_ID%TYPE;
     v_insurance_type_id INSURANCE_TYPE.INSURANCE_TYPE_ID%TYPE;
+    v_application_id INSURANCE_APPLICATION.APPLICATION_ID%TYPE;
+    
+    e_check_violation EXCEPTION;
+    PRAGMA EXCEPTION_INIT(e_check_violation, -02290);
+    e_not_null_violation EXCEPTION;
+    PRAGMA EXCEPTION_INIT(e_not_null_violation, -01400);
+    e_fk_violation EXCEPTION;
+    PRAGMA EXCEPTION_INIT(e_fk_violation, -02291);
     
     BEGIN
         IF VALIDATE_APPLICATION_FUNC(
@@ -37,7 +45,7 @@ CREATE OR REPLACE PACKAGE BODY APPLICATION_MANAGEMENT_PKG AS
             p_country,
             p_provider_name,
             p_insurance_type) THEN
-            dbms_output.put_line('Creating Application....');
+            dbms_output.put_line('Creating Insurance Application....');
             
             -- checking for existing address
             BEGIN 
@@ -45,11 +53,12 @@ CREATE OR REPLACE PACKAGE BODY APPLICATION_MANAGEMENT_PKG AS
                 INTO v_address_id
                 FROM ADDRESS
                 WHERE address_line_1 = p_address_line_1
-                AND nvl(address_line_2,' ') = ' '
+                AND nvl(address_line_2,' ') = nvl(p_address_line_2,' ')
                 AND city = p_city
                 AND state = p_state
                 AND zipcode = p_zipcode
-                AND country = p_country;
+                AND country = p_country
+                AND upper(address_type) = 'RESIDENTIAL';
             EXCEPTION
                 WHEN NO_DATA_FOUND THEN
                     dbms_output.put_line('Please enter a valid address');
@@ -63,21 +72,38 @@ CREATE OR REPLACE PACKAGE BODY APPLICATION_MANAGEMENT_PKG AS
                 INTO v_policyholder_id
                 FROM POLICYHOLDER
                 WHERE email = p_email;
+                
+                dbms_output.put_line('Policyholder already exists with policyholder id: ' || v_policyholder_id);
             EXCEPTION
                 WHEN NO_DATA_FOUND THEN
                     v_policyholder_id := POLICY_HOLDER_SEQ.nextval;
                     
-                    INSERT INTO POLICYHOLDER VALUES(
-                        v_policyholder_id,
-                        p_first_name,
-                        p_last_name,
-                        p_dob,
-                        p_email,
-                        p_contact,
-                        v_address_id
-                    );
-                    COMMIT;
-                    dbms_output.put_line('Policyholder created successfully with Policyholder Id: ' || v_policyholder_id);
+                    BEGIN
+                    
+                        INSERT INTO POLICYHOLDER VALUES(
+                            v_policyholder_id,
+                            p_first_name,
+                            p_last_name,
+                            p_dob,
+                            p_email,
+                            p_contact,
+                            v_address_id
+                        );
+                        COMMIT;
+                        dbms_output.put_line('Policyholder created successfully with Policyholder Id: ' || v_policyholder_id);
+                    EXCEPTION 
+                        WHEN DUP_VAL_ON_INDEX THEN
+                            dbms_output.put_line('Policy holder already exists, check for duplicate policy holder records');
+                            rollback;
+                        WHEN e_not_null_violation THEN
+                            dbms_output.put_line('Mandatory columns cannot be null in POLICYHOLDER table');
+                            rollback;
+                        WHEN e_fk_violation THEN
+                            dbms_output.put_line('Foreign key violation, enter a valid address id');
+                            rollback;
+                        WHEN OTHERS THEN
+                            dbms_output.put_line('Exception occured while inserting data into POLICYHOLDER table: '||sqlerrm);
+                    END;
                 WHEN OTHERS THEN
                     dbms_output.put_line('Exception occured when fetching policyholder id: ' || sqlerrm);
             END;
@@ -123,19 +149,55 @@ CREATE OR REPLACE PACKAGE BODY APPLICATION_MANAGEMENT_PKG AS
                     dbms_output.put_line('Exception occured when fetching provider id: ' || sqlerrm);
             END;
             
+            -- checking for existing insurance application
+            BEGIN
+                SELECT ia.application_id
+                INTO v_application_id
+                FROM INSURANCE_APPLICATION ia,
+                AGENT a,
+                PROVIDER p,
+                INSURANCE_TYPE it
+                WHERE ia.policyholder_id = v_policyholder_id
+                AND ia.agent_id = a.agent_id
+                AND a.provider_id = p.provider_id
+                AND p.provider_id = v_provider_id
+                AND ia.insurance_type_id = it.insurance_type_id
+                AND it.insurance_type_id = v_insurance_type_id
+                AND ia.status = 'Pending';
+                
+                dbms_output.put_line('Application already exists with application id: ' || v_application_id);
             
-            INSERT INTO INSURANCE_APPLICATION VALUES(
-                INS_APPL_SEQ.nextval,
-                v_policyholder_id,
-                v_insurance_type_id,
-                sysdate,
-                'Pending',
-                null,
-                v_agent_id,
-                'Application created'
-            );
-            COMMIT;
-            dbms_output.put_line('Application created successfully with Application Id: ' || INS_APPL_SEQ.currval);
+            EXCEPTION
+                WHEN NO_DATA_FOUND THEN   
+                    BEGIN
+                        INSERT INTO INSURANCE_APPLICATION VALUES(
+                            INS_APPL_SEQ.nextval,
+                            v_policyholder_id,
+                            v_insurance_type_id,
+                            sysdate,
+                            'Pending',
+                            null,
+                            v_agent_id,
+                            'Application created'
+                        );
+                        COMMIT;
+                        dbms_output.put_line('Application created successfully with Application Id: ' || INS_APPL_SEQ.currval);
+                    EXCEPTION 
+                        when DUP_VAL_ON_INDEX then
+                            DBMS_OUTPUT.PUT_LINE('Insurance application already exists, check for duplicate application records');
+                            rollback;
+                        when E_NOT_NULL_VIOLATION then
+                            DBMS_OUTPUT.PUT_LINE('Mandatory columns cannot be null in INSURANCE_APPLICATION table');
+                            rollback;
+                        when E_FK_VIOLATION then
+                            DBMS_OUTPUT.PUT_LINE('Foreign key violation, enter valid policyholder, insurance type, or agent ID');
+                            rollback;
+                        when others then
+                            DBMS_OUTPUT.PUT_LINE('Exception occurred while inserting data into INSURANCE_APPLICATION table: ' || SQLERRM);
+                    END;
+                WHEN OTHERS THEN
+                    dbms_output.put_line('Exception occured when fetching existing application: ' || sqlerrm);
+            END;
     ELSE 
         dbms_output.put_line('Please enter valid application data...');
             
@@ -172,14 +234,14 @@ CREATE OR REPLACE PACKAGE BODY APPLICATION_MANAGEMENT_PKG AS
           RETURN FALSE;
         END IF;
         
-        -- Validate first name (letters, hyphens, and apostrophes only, 2-30 characters)
-        IF NOT REGEXP_LIKE(p_first_name, '^[A-Za-z][A-Za-z\-'']{1,29}$') THEN
+        -- Validate first name (starts with letters, contains letters and spaces only, 2-30 characters)
+        IF NOT REGEXP_LIKE(p_first_name, '^[A-Za-z]{1}[A-Za-z\s]{1,29}$') THEN
           dbms_output.put_line('Please enter valid First name');
           RETURN FALSE;
         END IF;
         
-        -- Validate last name (letters, hyphens, and apostrophes only, 2-30 characters)
-        IF NOT REGEXP_LIKE(p_last_name, '^[A-Za-z][A-Za-z\-'']{1,29}$') THEN
+        -- Validate last name (single word, contains letters only, 2-30 characters)
+        IF NOT REGEXP_LIKE(p_last_name, '^[A-Za-z]{2,30}$') THEN
           dbms_output.put_line('Please enter valid Last name');
           RETURN FALSE;
         END IF;
@@ -227,6 +289,13 @@ CREATE OR REPLACE PACKAGE BODY APPLICATION_MANAGEMENT_PKG AS
     v_country ADDRESS.COUNTRY%TYPE;
     v_provider_name PROVIDER.provider_name%TYPE;
     v_insurance_type INSURANCE_TYPE.insurance_type_name%TYPE;
+    
+    e_check_violation EXCEPTION;
+    PRAGMA EXCEPTION_INIT(e_check_violation, -02290);
+    e_not_null_violation EXCEPTION;
+    PRAGMA EXCEPTION_INIT(e_not_null_violation, -01400);
+    e_fk_violation EXCEPTION;
+    PRAGMA EXCEPTION_INIT(e_fk_violation, -02291);
     
     BEGIN
         BEGIN
@@ -285,29 +354,50 @@ CREATE OR REPLACE PACKAGE BODY APPLICATION_MANAGEMENT_PKG AS
                     dbms_output.put_line('Exception occured while fetching manager details: ' || sqlerrm);
             END;
             
-            UPDATE INSURANCE_APPLICATION
-            SET STATUS = p_application_status,
-            REVIEW_DATE = sysdate,
-            AGENT_ID = v_agent_id,
-            COMMENTS = p_comments 
-            WHERE APPLICATION_ID = p_application_id;
-            COMMIT;
-            dbms_output.put_line('Application has been reviewed and the status is updated to ' || p_application_status);
+            BEGIN
+                UPDATE INSURANCE_APPLICATION
+                SET STATUS = p_application_status,
+                REVIEW_DATE = sysdate,
+                AGENT_ID = v_agent_id,
+                COMMENTS = p_comments 
+                WHERE APPLICATION_ID = p_application_id;
+                COMMIT;
+                dbms_output.put_line('Application has been reviewed and the status is updated to ' || p_application_status);
+            EXCEPTION 
+                WHEN e_check_violation THEN
+                dbms_output.put_line('Please enter a valid application status');
+                WHEN OTHERS THEN
+                dbms_output.put_line('Exception occured while updating the application status: ' || sqlerrm);
+            END;
             
-            INSERT INTO POLICY VALUES(
-                POLICY_SEQ.nextval,
-                p_application_id,
-                v_policyholder_id,
-                v_provider_id,
-                v_insurance_type_id,
-                sysdate,
-                ADD_MONTHS(sysdate,12),
-                150,
-                10000,
-                'Active'
-            );
-            COMMIT;
-            dbms_output.put_line('Policy with policy id ' || POLICY_SEQ.currval || ' has been created and is active'); 
+            BEGIN
+                INSERT INTO POLICY VALUES(
+                    POLICY_SEQ.nextval,
+                    p_application_id,
+                    v_policyholder_id,
+                    v_provider_id,
+                    v_insurance_type_id,
+                    sysdate,
+                    ADD_MONTHS(sysdate,12),
+                    150,
+                    10000,
+                    'Active'
+                );
+                COMMIT;
+                dbms_output.put_line('Policy with policy id ' || POLICY_SEQ.currval || ' has been created and is active'); 
+            EXCEPTION 
+                WHEN DUP_VAL_ON_INDEX THEN
+                    DBMS_OUTPUT.PUT_LINE('Policy already exists, check for duplicate policy records');
+                    rollback;
+                WHEN E_NOT_NULL_VIOLATION Then
+                    DBMS_OUTPUT.PUT_LINE('Mandatory columns cannot be null in POLICY table ');
+                    rollback;
+                WHEN E_FK_VIOLATION THEN
+                    DBMS_OUTPUT.PUT_LINE('Foreign key violation, enter valid application, policyholder, provider, or insurance type ID');
+                    rollback;
+                WHEN OTHERS THEN
+                    DBMS_OUTPUT.PUT_LINE('Exception occurred while inserting data into POLICY table: ' || SQLERRM);
+            END;
         ELSE
             dbms_output.put_line('Please enter valid application data...');
         END IF;
