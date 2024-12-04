@@ -96,7 +96,9 @@ BEGIN
             contact NUMBER(10) CONSTRAINT contact_nn NOT NULL,
             address_id INTEGER,
             CONSTRAINT policyholder_id_pk PRIMARY KEY (policyholder_id),
-            CONSTRAINT ph_addr_id_fk FOREIGN KEY (address_id) REFERENCES ADDRESS(address_id) ON DELETE SET NULL
+            CONSTRAINT ph_addr_id_fk FOREIGN KEY (address_id) REFERENCES ADDRESS(address_id) ON DELETE SET NULL,
+            CONSTRAINT check_unique_ph_email UNIQUE(email),
+            CONSTRAINT check_unique_ph_contact UNIQUE(contact)
         )';
         dbms_output.put_line('Table POLICYHOLDER created');
        
@@ -188,7 +190,7 @@ BEGIN
             insurance_type_id INTEGER CONSTRAINT insapp_type_id_nn NOT NULL ,
             application_date DATE DEFAULT SYSDATE CONSTRAINT insapp_date_nn NOT NULL,
             status VARCHAR2(20) CONSTRAINT insapp_status_check CHECK (status IN (''Pending'', ''Approved'', ''Rejected'')),
-            review_date DATE CONSTRAINT insapp_review_date_nn NOT NULL,
+            review_date DATE,
             agent_id INTEGER,
             comments VARCHAR2(255),
             CONSTRAINT policyholder_id_fk FOREIGN KEY (policyholder_id) REFERENCES POLICYHOLDER(policyholder_id) ON DELETE SET NULL,
