@@ -15,7 +15,7 @@ BEGIN
 END UpdatePolicyStatusWrapper;
 /
 -- Grant execute on UpdatePolicyStatusWrapper to Policy_Holder role
-GRANT EXECUTE ON UpdatePolicyStatusWrapper TO Policy_Holder;
+GRANT EXECUTE ON ICPS_CORE.UpdatePolicyStatusWrapper TO Manager;
 
 -- Wrapper for ReviewPolicy
 CREATE OR REPLACE PROCEDURE ReviewPolicyWrapper (
@@ -30,7 +30,7 @@ BEGIN
 END ReviewPolicyWrapper;
 /
 -- Grant execute on ReviewPolicyWrapper to Manager role
-GRANT EXECUTE ON ReviewPolicyWrapper TO Manager;
+GRANT EXECUTE ON ICPS_CORE.ReviewPolicyWrapper TO Adjuster, Manager;
 
 -- Wrapper for CheckPolicyValidity
 CREATE OR REPLACE FUNCTION CheckPolicyValidityWrapper (
@@ -47,7 +47,7 @@ BEGIN
 END CheckPolicyValidityWrapper;
 /
 -- Grant execute on CheckPolicyValidityWrapper to Policy_Holder, Manager, Adjuster, and Salesman roles
-GRANT EXECUTE ON CheckPolicyValidityWrapper TO Policy_Holder, Manager, Adjuster, Salesman;
+GRANT EXECUTE ON ICPS_CORE.CheckPolicyValidityWrapper TO Policy_Holder, Manager, Adjuster, Salesman;
 
 -- Wrapper for GetPolicyDetails
 CREATE OR REPLACE FUNCTION GetPolicyDetailsWrapper (
@@ -64,4 +64,4 @@ BEGIN
 END GetPolicyDetailsWrapper;
 /
 -- Grant execute on GetPolicyDetailsWrapper to Policy_Holder, Manager, Adjuster, and Salesman roles
-GRANT EXECUTE ON GetPolicyDetailsWrapper TO Policy_Holder, Manager, Adjuster, Salesman;
+GRANT EXECUTE ON ICPS_CORE.GetPolicyDetailsWrapper TO Policy_Holder, Manager, Adjuster, Salesman;
