@@ -118,7 +118,31 @@ ORDER BY
 
 GRANT SELECT ON ICPS_CORE.PAYMENT_MANAGEMENT_REPORT TO MANAGER;
 
+CREATE OR REPLACE VIEW INSURANCE_APPLICATION_ANALYSIS AS
+SELECT
+    ia.insurance_type_id,
+    it.insurance_type_name,
+    COUNT(ia.application_id) AS total_applications,
+    SUM(CASE WHEN ia.status = 'Approved' THEN 1 ELSE 0 END) AS total_approved,
+    SUM(CASE WHEN ia.status = 'Rejected' THEN 1 ELSE 0 END) AS total_rejected,
+    SUM(CASE WHEN ia.status = 'Pending' THEN 1 ELSE 0 END) AS total_pending,
+    ROUND(SUM(CASE WHEN ia.status = 'Approved' THEN 1 ELSE 0 END) / NULLIF(COUNT(ia.application_id), 0) * 100, 2) AS approval_rate_percent,
+    ROUND(SUM(CASE WHEN ia.status = 'Rejected' THEN 1 ELSE 0 END) / NULLIF(COUNT(ia.application_id), 0) * 100, 2) AS rejection_rate_percent,
+    AVG(ia.review_date - ia.application_date) AS avg_review_time_days
+FROM
+    INSURANCE_APPLICATION ia
+JOIN
+    INSURANCE_TYPE it ON ia.insurance_type_id = it.insurance_type_id
+GROUP BY
+    ia.insurance_type_id, it.insurance_type_name
+ORDER BY
+    approval_rate_percent DESC, total_applications DESC;
+
+
+GRANT SELECT ON ICPS_CORE.PAYMENT_MANAGEMENT_REPORT TO POLICY_HOLDER, SALESMAN, MANAGER;
+
 COMMIT;
 /
 
 Select * from ICPS_CORE.PAYMENT_MANAGEMENT_REPORT;
+select * from icps_Core.INSURANCE_APPLICATION_ANALYSIS;

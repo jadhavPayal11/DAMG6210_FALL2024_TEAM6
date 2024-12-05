@@ -9,7 +9,7 @@
 ## Project Overview:
 This project focuses on developing an Insurance Claims Processing System aimed at improving the efficiency and accuracy of claims management in the insurance industry. The system automates claim submission, processing, and tracking, reducing manual intervention and associated errors.
 
-## Project_3 Deliverables
+## Project_4 Deliverables
 
 ### 1. Data Definition Language (DDL) Scripts
 The DDL scripts are used to define and manage the database schema, including the creation of tables, constraints, indexes, and relationships.
@@ -72,6 +72,48 @@ Grants control user permissions, ensuring each user has the appropriate level of
   - SELECT for policyholders and providers
   - ALL privileges for the admin
 
+### 6. Triggers:
+Claim Triggers
+  AfterClaimApprovalTrigger.sql
+    Logs changes and updates statuses after a claim is approved.
+
+BeforeClaimInsertTrigger.sql
+  Validates policies before allowing claims to be inserted.
+
+PreventClaimDeletionTrigger.sql
+  Prevents deletion of claims to ensure data integrity.
+
+Notification Triggers
+  NotifyAgentOnHighRiskTrigger.sql
+    Alerts agents about high-risk claims.
+
+NotifyCustomerOnClaimUpdateTrigger.sql
+Notifies customers about changes in claim status.
+
+Payment Triggers
+CloseClaimAfterSettlementTrigger.sql
+Closes claims automatically after payments are completed.
+
+PaymentStatusUpdateTrigger.sql
+Updates the payment status after processing.
+
+ReimbursementCalculationTrigger.sql
+Calculates reimbursement amounts based on claims and policies.
+
+Policy Triggers
+BeforePolicyInsertTrigger.sql
+Ensures policy data integrity before insertion.
+
+PolicyExpirationCheckTrigger.sql
+Automatically updates policy status when expired.
+
+### 7. Packages:
+Application Management
+Claim Management
+Payment Management
+PolicyHolder Management
+
+
 ## How to Run the Scripts
 
 SQL Script Execution Sequence:
@@ -80,6 +122,8 @@ SQL Script Execution Sequence:
 3. Run the TableCreation.sql script by connecting to ICPS_CORE that was created in Step2.
 4. Run the InsertRecords.sql script by connecting to ICPS_CORE.
 5. Run the TablesGrants.sql by script connecting to ICPS_CORE.
-6. Run the Views.sql script by connecting to ICPS_CORE to create views.
-7. Run the ViewsGrants.sql  script by connecting to ICPS_CORE.
+6. Run all the Triggers and Packages by connecting to ICPS_CORE
+7. Run the Views.sql script by connecting to ICPS_CORE to create views.
+8. Run the ViewsGrants.sql  script by connecting to ICPS_CORE.
+9. Run the Reports.sql as specific users
 
