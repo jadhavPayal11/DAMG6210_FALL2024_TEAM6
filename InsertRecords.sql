@@ -361,7 +361,7 @@ BEGIN
         values (POLICY_SEQ.nextval, 3, 3, 3, 3, to_date('2023-03-05', 'YYYY-MM-DD'), to_date('2033-03-05', 'YYYY-MM-DD'), 1500.00, 20000.00, 'Active');
         
         insert into policy (POLICY_ID, APPLICATION_ID, POLICYHOLDER_ID, PROVIDER_ID, INSURANCE_TYPE_ID, START_DATE, END_DATE, PREMIUM_AMOUNT, COVERAGE_AMOUNT, POLICY_STATUS)
-        values (POLICY_SEQ.nextval, 4, 4, 4, 4, to_date('2023-04-12', 'YYYY-MM-DD'), to_date('2028-04-12', 'YYYY-MM-DD'), 2000.00, 30000.00, 'Active');
+        values (POLICY_SEQ.nextval, 4, 4, 4, 4, to_date('2023-04-12', 'YYYY-MM-DD'), to_date('2024-12-12', 'YYYY-MM-DD'), 2000.00, 30000.00, 'Active');
         
         insert into policy (POLICY_ID, APPLICATION_ID, POLICYHOLDER_ID, PROVIDER_ID, INSURANCE_TYPE_ID, START_DATE, END_DATE, PREMIUM_AMOUNT, COVERAGE_AMOUNT, POLICY_STATUS)
         values (POLICY_SEQ.nextval, 5, 5, 5, 5, to_date('2023-05-20', 'YYYY-MM-DD'), null, 500.00, 5000.00, 'In Progress');
@@ -401,10 +401,10 @@ BEGIN
         
         -- Insert sample data into the CLAIM table
         Insert Into Claim (Claim_Id, Policy_Id, Agent_Id, Claim_Date, Claim_Type, Claim_Description, Claim_Amount, Claim_Status, Claim_Priority, Estimated_Settlement_Date)
-        Values (CLAIM_SEQ.nextval, 1, 1, To_Date('2023-06-01', 'YYYY-MM-DD'), 'Accident', 'Minor accident involving rear collision', 2500.00, 'In Progress', 'Low', To_Date('2023-06-08', 'YYYY-MM-DD'));
+        Values (CLAIM_SEQ.nextval, 1, 1, To_Date('2023-06-01', 'YYYY-MM-DD'), 'Accident', 'Minor accident involving rear collision', 2500.00, 'Settled', 'Low', To_Date('2023-06-08', 'YYYY-MM-DD'));
         
         Insert Into Claim (Claim_Id, Policy_Id, Agent_Id, Claim_Date, Claim_Type, Claim_Description, Claim_Amount, Claim_Status, Claim_Priority, Estimated_Settlement_Date)
-        Values (CLAIM_SEQ.nextval, 2, 2, To_Date('2023-06-05', 'YYYY-MM-DD'), 'Theft', 'Stolen vehicle', 15000.00, 'Approved', 'Medium', To_Date('2023-06-19', 'YYYY-MM-DD'));
+        Values (CLAIM_SEQ.nextval, 2, 2, To_Date('2023-06-05', 'YYYY-MM-DD'), 'Theft', 'Stolen vehicle', 15000.00, 'Settled', 'Medium', To_Date('2023-06-19', 'YYYY-MM-DD'));
         
         Insert Into Claim (Claim_Id, Policy_Id, Agent_Id, Claim_Date, Claim_Type, Claim_Description, Claim_Amount, Claim_Status, Claim_Priority, Estimated_Settlement_Date)
         Values (CLAIM_SEQ.nextval, 3, 3, To_Date('2023-06-10', 'YYYY-MM-DD'), 'Fire', 'Fire damage in engine compartment', 5000.00, 'Rejected', 'Medium', Null);
@@ -453,12 +453,6 @@ BEGIN
         
         insert into PAYMENT (PAYMENT_ID, CLAIM_ID, PAYMENT_DATE, PAYMENT_AMOUNT, PAYMENT_METHOD, PAYMENT_STATUS)
         values (PAYMENT_SEQ.nextval, 2, to_date('2023-06-20', 'YYYY-MM-DD'), 15000.00, 'Direct Deposit', 'Completed');
-        
-        insert into PAYMENT (PAYMENT_ID, CLAIM_ID, PAYMENT_DATE, PAYMENT_AMOUNT, PAYMENT_METHOD, PAYMENT_STATUS)
-        values (PAYMENT_SEQ.nextval, 3, to_date('2023-06-25', 'YYYY-MM-DD'), 5000.00, 'Payment to 3rd Party', 'Partial');
-        
-        insert into PAYMENT (PAYMENT_ID, CLAIM_ID, PAYMENT_DATE, PAYMENT_AMOUNT, PAYMENT_METHOD, PAYMENT_STATUS)
-        values (PAYMENT_SEQ.nextval, 4, to_date('2023-06-30', 'YYYY-MM-DD'), 7000.00, 'Check', 'Completed');
         
         insert into PAYMENT (PAYMENT_ID, CLAIM_ID, PAYMENT_DATE, PAYMENT_AMOUNT, PAYMENT_METHOD, PAYMENT_STATUS)
         values (PAYMENT_SEQ.nextval, 5, to_date('2023-07-05', 'YYYY-MM-DD'), 20000.00, 'Direct Deposit', 'In Progress');

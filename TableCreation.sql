@@ -298,7 +298,7 @@ BEGIN
             payment_date DATE,
             payment_amount NUMBER(10,2),
             payment_method VARCHAR2(20) CONSTRAINT payment_method_check CHECK (payment_method IN (''Check'', ''Direct Deposit'', ''Payment to 3rd Party'')),
-            payment_status VARCHAR2(20) CONSTRAINT payment_status_check CHECK (payment_status IN (''Partial'', ''Completed'', ''In Progress'')),
+            payment_status VARCHAR2(20) CONSTRAINT payment_status_check CHECK (payment_status IN (''Completed'', ''In Progress'')),
             CONSTRAINT payment_claim_id_fk FOREIGN KEY (claim_id) REFERENCES CLAIM(claim_id) ON DELETE CASCADE
         )';
         dbms_output.put_line('Table PAYMENT Created');

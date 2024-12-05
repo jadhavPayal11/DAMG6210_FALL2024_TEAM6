@@ -135,7 +135,7 @@ BEGIN
         LEFT JOIN
             AGENT ag ON cl.agent_id = ag.agent_id
         WHERE
-            cl.claim_status = ''Pending''';
+            cl.claim_status = ''In Progress''';
         dbms_output.put_line('View PENDING_CLAIMS_OVERVIEW created');
     EXCEPTION
         WHEN OTHERS THEN
@@ -276,10 +276,10 @@ BEGIN
             ag.agent_id AS adjuster_id,
             ag.first_name || '' '' || ag.last_name AS adjuster_name,
             COUNT(cl.claim_id) AS total_claims_assigned,
-            COUNT(CASE WHEN cl.claim_status = ''Resolved'' THEN 1 END) AS claims_resolved,
+            COUNT(CASE WHEN cl.claim_status = ''Settled'' THEN 1 END) AS claims_resolved,
             AVG(cl.estimated_settlement_date - cl.claim_date) AS average_resolution_time,
             ROUND(
-                (COUNT(CASE WHEN cl.claim_status = ''Resolved'' THEN 1 END) / NULLIF(COUNT(cl.claim_id), 0)) * 100,
+                (COUNT(CASE WHEN cl.claim_status = ''Settled'' THEN 1 END) / NULLIF(COUNT(cl.claim_id), 0)) * 100,
                 2
             ) AS accuracy_rate
         FROM
