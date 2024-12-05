@@ -2,7 +2,7 @@
 -- Test Case 1: Update payment status and claim status successfully
 BEGIN
     ICPS_CORE.PROCESS_PAYMENT_WRAPPER_PROC(
-        p_claim_id => 1, -- Existing Claim ID with payment status not "Completed"
+        p_claim_id => 6, -- Existing Claim ID with payment status not "Completed"
         p_payment_status => 'Completed'
     );
     -- Expected Output: Payment status updated for Claim ID: 101

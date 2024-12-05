@@ -76,8 +76,10 @@ CREATE OR REPLACE PACKAGE BODY policy_management_package AS
         END IF;
 
         -- Verify policyholder ownership
-        IF NOT ValidatePolicyHolder(p_policy_id, p_policyholder_id) THEN
-            RAISE_APPLICATION_ERROR(-20003, 'Only the policyholder can cancel the policy.');
+        IF p_new_status = 'Canceled' THEN
+            IF NOT ValidatePolicyHolder(p_policy_id, p_policyholder_id) THEN
+                RAISE_APPLICATION_ERROR(-20003, 'Only the policyholder can cancel the policy.');
+            END IF;
         END IF;
 
         -- Update the Policy Status

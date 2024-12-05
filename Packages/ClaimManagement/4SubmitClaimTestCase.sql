@@ -12,8 +12,8 @@ BEGIN
         
         -- Execute the procedure with schema prefix
         ICPS_CORE.SubmitClaimWrapper(
-            p_policy_id => 1,
-            p_agent_id => 1,
+            p_policy_id => 3,
+            p_agent_id => 2,
             p_claim_date => SYSDATE,
             p_claim_type => 'Accident',
             p_claim_description => 'Minor accident involving a scratch.',

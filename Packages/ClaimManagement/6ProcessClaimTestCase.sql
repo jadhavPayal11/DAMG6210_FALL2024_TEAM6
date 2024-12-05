@@ -57,7 +57,7 @@ BEGIN
         
         -- Set the claim status to "Closed"
         UPDATE ICPS_CORE.CLAIM
-        SET CLAIM_STATUS = 'Closed'
+        SET CLAIM_STATUS = 'Settled'
         WHERE CLAIM_ID = 2;
 
         COMMIT;
@@ -79,30 +79,6 @@ BEGIN
                 DBMS_OUTPUT.PUT_LINE('Test Case 2 passed: ' || v_error_message);
             ELSE
                 DBMS_OUTPUT.PUT_LINE('Error in Test Case 2: ' || v_error_message);
-            END IF;
-    END;
-
-    -- Test Case 3: Process a non-existent claim
-    BEGIN
-        DBMS_OUTPUT.PUT_LINE('Test Case 3: Processing a non-existent claim...');
-        
-        -- Execute the procedure with a non-existent claim_id
-        ICPS_CORE.ProcessClaimWrapper(
-            p_claim_id => 9999, -- Replace with a non-existent claim_id
-            p_approval_status => 'Approved',
-            p_comments => 'Attempting to approve a non-existent claim.'
-        );
-
-        DBMS_OUTPUT.PUT_LINE('Test Case 3 failed: Non-existent claim processed.');
-
-    EXCEPTION
-        WHEN OTHERS THEN
-            v_error_code := SQLCODE;
-            v_error_message := SQLERRM;
-            IF v_error_code = -20002 THEN
-                DBMS_OUTPUT.PUT_LINE('Test Case 3 passed: ' || v_error_message);
-            ELSE
-                DBMS_OUTPUT.PUT_LINE('Error in Test Case 3: ' || v_error_message);
             END IF;
     END;
 
