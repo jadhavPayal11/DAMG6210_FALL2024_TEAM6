@@ -14,6 +14,22 @@ CREATE OR REPLACE PACKAGE BODY policy_management_package AS
         RETURN v_count > 0;
     END ValidatePolicy;
 
+    -- Helper Function: Validate Policy Holder
+    FUNCTION ValidatePolicyHolder(
+        p_policy_id IN POLICY.POLICY_ID%TYPE,
+        p_policyholder_id IN POLICY.POLICYHOLDER_ID%TYPE
+    ) RETURN BOOLEAN IS
+        v_count INTEGER;
+    BEGIN
+        SELECT COUNT(*)
+        INTO v_count
+        FROM POLICY
+        WHERE POLICY_ID = p_policy_id
+          AND POLICYHOLDER_ID = p_policyholder_id;
+
+        RETURN v_count > 0;
+    END ValidatePolicyHolder;
+
     -- Helper Function: Check if Policy is In Progress
     FUNCTION IsPolicyInProgress(
         p_policy_id IN POLICY.POLICY_ID%TYPE
@@ -45,10 +61,9 @@ CREATE OR REPLACE PACKAGE BODY policy_management_package AS
     -- Stored Procedure: Update Policy Status
     PROCEDURE UpdatePolicyStatus(
         p_policy_id IN POLICY.POLICY_ID%TYPE,
+        p_policyholder_id IN POLICY.POLICYHOLDER_ID%TYPE,
         p_new_status IN VARCHAR2
     ) IS
-        v_policyholder_id INTEGER;
-        v_current_status VARCHAR2(20);
     BEGIN
         -- Validate Policy
         IF NOT ValidatePolicy(p_policy_id) THEN
@@ -60,14 +75,8 @@ CREATE OR REPLACE PACKAGE BODY policy_management_package AS
             RAISE_APPLICATION_ERROR(-20002, 'Only active policies can be cancelled.');
         END IF;
 
-        -- Get the Policy Holder ID and Current Status
-        SELECT POLICYHOLDER_ID, POLICY_STATUS
-        INTO v_policyholder_id, v_current_status
-        FROM POLICY
-        WHERE POLICY_ID = p_policy_id;
-
-        -- Check if the current user is the policyholder
-        IF v_policyholder_id != USER THEN
+        -- Verify policyholder ownership
+        IF NOT ValidatePolicyHolder(p_policy_id, p_policyholder_id) THEN
             RAISE_APPLICATION_ERROR(-20003, 'Only the policyholder can cancel the policy.');
         END IF;
 
@@ -85,7 +94,6 @@ CREATE OR REPLACE PACKAGE BODY policy_management_package AS
     PROCEDURE ReviewPolicy(
         p_policy_id IN POLICY.POLICY_ID%TYPE
     ) IS
-        v_current_status VARCHAR2(20);
     BEGIN
         -- Validate Policy
         IF NOT ValidatePolicy(p_policy_id) THEN
