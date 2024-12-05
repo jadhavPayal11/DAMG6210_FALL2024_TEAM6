@@ -1,6 +1,7 @@
 -- Wrapper for UpdatePolicyStatus
 CREATE OR REPLACE PROCEDURE UpdatePolicyStatusWrapper (
     p_policy_id IN POLICY.POLICY_ID%TYPE,
+    p_policyholder_id IN POLICY.POLICYHOLDER_ID%TYPE,
     p_new_status IN VARCHAR2
 )
 AS
@@ -8,6 +9,7 @@ BEGIN
     -- Call the UpdatePolicyStatus procedure from the package
     policy_management_package.UpdatePolicyStatus(
         p_policy_id,
+        p_policyholder_id,
         p_new_status
     );
 END UpdatePolicyStatusWrapper;
