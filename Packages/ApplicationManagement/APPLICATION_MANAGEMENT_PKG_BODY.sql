@@ -444,9 +444,13 @@ CREATE OR REPLACE PACKAGE BODY APPLICATION_MANAGEMENT_PKG AS
         RETURN v_status;
     EXCEPTION
     WHEN NO_DATA_FOUND THEN
-                    dbms_output.put_line('Please enter a valid application id');
+        v_status := ' ';
+        dbms_output.put_line('Please enter a valid application id');
+        RETURN v_status;
     WHEN OTHERS THEN
+        v_status := ' ';
         dbms_output.put_line('Exception occured while retriving application status: ' || sqlerrm);
+        RETURN v_status;
     END GET_APPLICATION_STATUS;
     
 END APPLICATION_MANAGEMENT_PKG;
