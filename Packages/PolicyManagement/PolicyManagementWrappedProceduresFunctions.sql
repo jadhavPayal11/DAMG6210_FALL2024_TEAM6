@@ -1,6 +1,7 @@
 -- Wrapper for UpdatePolicyStatus
 CREATE OR REPLACE PROCEDURE UpdatePolicyStatusWrapper (
     p_policy_id IN POLICY.POLICY_ID%TYPE,
+    p_policyholder_id IN POLICY.POLICYHOLDER_ID%TYPE,
     p_new_status IN VARCHAR2
 )
 AS
@@ -8,12 +9,13 @@ BEGIN
     -- Call the UpdatePolicyStatus procedure from the package
     policy_management_package.UpdatePolicyStatus(
         p_policy_id,
+        p_policyholder_id,
         p_new_status
     );
 END UpdatePolicyStatusWrapper;
 /
--- Grant execute on UpdatePolicyStatusWrapper to PolicyHolder role
-GRANT EXECUTE ON UpdatePolicyStatusWrapper TO PolicyHolder;
+-- Grant execute on UpdatePolicyStatusWrapper to Policy_Holder role
+GRANT EXECUTE ON ICPS_CORE.UpdatePolicyStatusWrapper TO Manager;
 
 -- Wrapper for ReviewPolicy
 CREATE OR REPLACE PROCEDURE ReviewPolicyWrapper (
@@ -28,7 +30,7 @@ BEGIN
 END ReviewPolicyWrapper;
 /
 -- Grant execute on ReviewPolicyWrapper to Manager role
-GRANT EXECUTE ON ReviewPolicyWrapper TO Manager;
+GRANT EXECUTE ON ICPS_CORE.ReviewPolicyWrapper TO Adjuster, Manager;
 
 -- Wrapper for CheckPolicyValidity
 CREATE OR REPLACE FUNCTION CheckPolicyValidityWrapper (
@@ -44,8 +46,8 @@ BEGIN
     RETURN v_result;
 END CheckPolicyValidityWrapper;
 /
--- Grant execute on CheckPolicyValidityWrapper to PolicyHolder, Manager, Adjuster, and Salesman roles
-GRANT EXECUTE ON CheckPolicyValidityWrapper TO PolicyHolder, Manager, Adjuster, Salesman;
+-- Grant execute on CheckPolicyValidityWrapper to Policy_Holder, Manager, Adjuster, and Salesman roles
+GRANT EXECUTE ON ICPS_CORE.CheckPolicyValidityWrapper TO Policy_Holder, Manager, Adjuster, Salesman;
 
 -- Wrapper for GetPolicyDetails
 CREATE OR REPLACE FUNCTION GetPolicyDetailsWrapper (
@@ -61,25 +63,5 @@ BEGIN
     RETURN v_details;
 END GetPolicyDetailsWrapper;
 /
--- Grant execute on GetPolicyDetailsWrapper to PolicyHolder, Manager, Adjuster, and Salesman roles
-GRANT EXECUTE ON GetPolicyDetailsWrapper TO PolicyHolder, Manager, Adjuster, Salesman;
-
--- Verification Script
-SET SERVEROUTPUT ON;
-BEGIN
-    DBMS_OUTPUT.PUT_LINE('Verifying wrapper creation and grants...');
-    FOR obj IN (
-        SELECT OBJECT_NAME, STATUS
-        FROM USER_OBJECTS
-        WHERE OBJECT_NAME IN (
-            'UPDATEPOLICYSTATUSWRAPPER',
-            'REVIEWPOLICYWRAPPER',
-            'CHECKPOLICYVALIDITYWRAPPER',
-            'GETPOLICYDETAILSWRAPPER'
-        )
-    ) LOOP
-        DBMS_OUTPUT.PUT_LINE('Object: ' || obj.OBJECT_NAME || ' - Status: ' || obj.STATUS);
-    END LOOP;
-    DBMS_OUTPUT.PUT_LINE('Verification complete.');
-END;
-/
+-- Grant execute on GetPolicyDetailsWrapper to Policy_Holder, Manager, Adjuster, and Salesman roles
+GRANT EXECUTE ON ICPS_CORE.GetPolicyDetailsWrapper TO Policy_Holder, Manager, Adjuster, Salesman;
