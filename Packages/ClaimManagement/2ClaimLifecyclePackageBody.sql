@@ -264,5 +264,4 @@ CREATE OR REPLACE PACKAGE BODY ClaimLifecyclePackage AS
 END ClaimLifecyclePackage;
 /
 
-DESC CLAIM;
 

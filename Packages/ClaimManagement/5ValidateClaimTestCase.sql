@@ -15,7 +15,7 @@ BEGIN
         
         -- Execute the procedure with schema prefix
         ICPS_CORE.ValidateClaimWrapper(
-            p_claim_id => 1 -- Replace with an actual claim_id in "In Progress" status
+            p_claim_id => 4 -- Replace with an actual claim_id in "In Progress" status
         );
 
         DBMS_OUTPUT.PUT_LINE('Claim validation successful for Claim ID: 1');
@@ -33,7 +33,7 @@ BEGIN
         
         -- Set a claim status to "Closed" or another invalid state for validation
         UPDATE ICPS_CORE.CLAIM
-        SET CLAIM_STATUS = 'Closed'
+        SET CLAIM_STATUS = 'Settled'
         WHERE CLAIM_ID = 2;
 
         COMMIT;
@@ -68,6 +68,8 @@ BEGIN
         DBMS_OUTPUT.PUT_LINE('Test Case 3 failed: Non-existent claim validated.');
 
     EXCEPTION
+        WHEN NO_DATA_FOUND THEN
+            DBMS_OUTPUT.PUT_LINE('Claim does not exist');
         WHEN OTHERS THEN
             v_error_code := SQLCODE;
             v_error_message := SQLERRM;
