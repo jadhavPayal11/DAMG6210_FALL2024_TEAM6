@@ -120,10 +120,11 @@ SQL Script Execution Sequence:
 1. Run the AdminCreation.sql script by connecting to your database admin.
 2. Run the UserCreation.sql by script connecting to ICPS_ADMIN that was created in Step1.
 3. Run the TableCreation.sql script by connecting to ICPS_CORE that was created in Step2.
-4. Run the InsertRecords.sql script by connecting to ICPS_CORE.
-5. Run the TablesGrants.sql by script connecting to ICPS_CORE.
-6. Run all the Triggers and Packages by connecting to ICPS_CORE
-7. Run the Views.sql script by connecting to ICPS_CORE to create views.
-8. Run the ViewsGrants.sql  script by connecting to ICPS_CORE.
-9. Run the Reports.sql as specific users
+4. Run the SequenceCreation.sql script by connecting to ICPS_CORE.
+5. Run the InsertRecords.sql script by connecting to ICPS_CORE.
+6. Run the TablesGrants.sql by script connecting to ICPS_CORE.
+7. Run all the Triggers and Packages by connecting to ICPS_CORE
+8. Run the Views.sql script by connecting to ICPS_CORE to create views.
+9. Run the ViewsGrants.sql  script by connecting to ICPS_CORE.
+10. Run the Reports.sql as specific users
 
