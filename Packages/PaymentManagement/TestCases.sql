@@ -1,7 +1,7 @@
--- For stored procedure
+-- For stored procedure (ADJUSTER)
 -- Test Case 1: Update payment status and claim status successfully
 BEGIN
-    PROCESS_PAYMENT_WRAPPER_PROC(
+    ICPS_CORE.PROCESS_PAYMENT_WRAPPER_PROC(
         p_claim_id => 1, -- Existing Claim ID with payment status not "Completed"
         p_payment_status => 'Completed'
     );
@@ -11,7 +11,7 @@ END;
 /
 
 BEGIN
-    PROCESS_PAYMENT_WRAPPER_PROC(
+    ICPS_CORE.PROCESS_PAYMENT_WRAPPER_PROC(
         p_claim_id => 2, -- Existing Claim ID with payment status not "Completed"
         p_payment_status => 'Completed'
     );
@@ -20,16 +20,16 @@ BEGIN
 END;
 /
 
--- For Function
+-- For Function (A/M/PH)
 -- Test Case 1: Fetch payment details for a valid Claim ID
 SET SERVEROUTPUT ON;
 
 DECLARE
     payment_cursor SYS_REFCURSOR;
-    payment_record PAYMENT%ROWTYPE; -- Record to hold payment details
+    payment_record ICPS_CORE.PAYMENT%ROWTYPE; -- Record to hold payment details
 BEGIN
     -- Call the wrapper function with a valid Claim ID
-    payment_cursor := GET_PAYMENT_DETAILS_WRAPPER_FUNC(1); -- Meention existing Claim ID in your data
+    payment_cursor := ICPS_CORE.GET_PAYMENT_DETAILS_WRAPPER_FUNC(2); -- Meention existing Claim ID in your data
 
     -- Loop through the cursor to fetch records
     LOOP
