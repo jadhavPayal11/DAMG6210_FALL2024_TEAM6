@@ -248,3 +248,5 @@ EXCEPTION
         dbms_output.put_line('Exception occured while creating sequences');    
 END;
 /
+
+commit;
